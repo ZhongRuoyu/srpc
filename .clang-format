@@ -1,0 +1,19 @@
+---
+BasedOnStyle: Google
+---
+Language: Cpp
+DerivePointerAlignment: false
+IncludeCategories:
+  - Regex: ^<(gtest)/.*\.h>
+    Priority: 3
+    SortPriority: 0
+  - Regex: ^<.*\.h>
+    Priority: 1
+    SortPriority: 0
+  - Regex: ^<.*
+    Priority: 2
+    SortPriority: 0
+  - Regex: .*
+    Priority: 4
+    SortPriority: 0
+PointerAlignment: Right
