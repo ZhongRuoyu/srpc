@@ -38,7 +38,7 @@ endif()
 include(GNUInstallDirs)
 install(TARGETS srpc DESTINATION ${CMAKE_INSTALL_LIBDIR})
 foreach(header ${SRPC_HDRS})
-  string(REGEX REPLACE "^include/(.*)/.*\.h$" "\\1" header_dir ${header})
+  string(REGEX REPLACE "^include/(.*)/.*$" "\\1" header_dir ${header})
   install(FILES ${header}
     DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${header_dir})
 endforeach()
