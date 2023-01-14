@@ -8,6 +8,7 @@ target_sources(srpc_tests PRIVATE
   protocol/integers.cc
   protocol/string.cc
   utils/memory.cc
+  utils/result.cc
 )
 target_link_libraries(srpc_tests PRIVATE
   srpc
