@@ -12,7 +12,7 @@ namespace srpc {
 
 class ServerSocket {
  public:
-  static Result<std::unique_ptr<ServerSocket>> New(int port);
+  [[nodiscard]] static Result<std::unique_ptr<ServerSocket>> New(int port);
 
   ServerSocket() = delete;
   ServerSocket(const ServerSocket &) = delete;
@@ -23,7 +23,7 @@ class ServerSocket {
 
   ~ServerSocket();
 
-  operator int() const;
+  [[nodiscard]] operator int() const;
 
   [[nodiscard]] const std::string &Address() const;
   [[nodiscard]] int Port() const;

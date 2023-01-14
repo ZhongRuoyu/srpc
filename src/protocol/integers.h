@@ -23,7 +23,7 @@ using u32 = std::uint32_t;
 using u64 = std::uint64_t;
 
 template <typename T>
-inline constexpr T Byteswap(T val) {
+[[nodiscard]] inline constexpr T Byteswap(T val) {
   if constexpr (sizeof(T) == 8) {
     return ((std::make_unsigned_t<T>(val) & 0xff00000000000000) >> 56) |
            ((std::make_unsigned_t<T>(val) & 0x00ff000000000000) >> 40) |
@@ -51,7 +51,8 @@ inline constexpr T Byteswap(T val) {
 }
 
 template <typename T>
-inline constexpr std::array<std::byte, sizeof(T)> Serialize(T val) {
+[[nodiscard]] inline constexpr std::array<std::byte, sizeof(T)> Serialize(
+    T val) {
   if constexpr (std::endian::native == std::endian::big) {
     val = Byteswap(val);
   }
@@ -61,7 +62,8 @@ inline constexpr std::array<std::byte, sizeof(T)> Serialize(T val) {
 }
 
 template <typename T>
-inline constexpr T Deserialize(std::array<std::byte, sizeof(T)> data) {
+[[nodiscard]] inline constexpr T Deserialize(
+    std::array<std::byte, sizeof(T)> data) {
   T val;
   Memcpy((std::byte *)&val, (std::byte *)data.data(), sizeof(T));
   if constexpr (std::endian::native == std::endian::big) {

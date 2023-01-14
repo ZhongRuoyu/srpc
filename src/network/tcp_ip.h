@@ -7,9 +7,9 @@
 
 namespace srpc {
 
-std::string GetInAddr(const sockaddr *addr);
+[[nodiscard]] std::string GetInAddr(const sockaddr *addr);
 
-int GetInPort(const sockaddr *addr);
+[[nodiscard]] int GetInPort(const sockaddr *addr);
 
 }  // namespace srpc
 

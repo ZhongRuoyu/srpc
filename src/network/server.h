@@ -13,7 +13,7 @@ namespace srpc {
 
 class Server {
  public:
-  static Result<std::unique_ptr<Server>> New(int port);
+  [[nodiscard]] static Result<std::unique_ptr<Server>> New(int port);
 
   Server() = delete;
   Server(const Server &) = delete;

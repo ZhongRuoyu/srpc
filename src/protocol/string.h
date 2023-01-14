@@ -8,9 +8,10 @@
 
 namespace srpc {
 
-std::vector<std::byte> Serialize(const std::string &str);
+[[nodiscard]] std::vector<std::byte> Serialize(const std::string &str);
 
-std::optional<std::string> Deserialize(const std::vector<std::byte> &data);
+[[nodiscard]] std::optional<std::string> Deserialize(
+    const std::vector<std::byte> &data);
 
 }  // namespace srpc
 

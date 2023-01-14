@@ -15,7 +15,8 @@ using f32 = float;
 static_assert(std::numeric_limits<double>::is_iec559);
 using f64 = double;
 
-inline constexpr std::array<std::byte, sizeof(f32)> Serialize(f32 val) {
+[[nodiscard]] inline constexpr std::array<std::byte, sizeof(f32)> Serialize(
+    f32 val) {
   union {
     f32 f;
     i32 i;
@@ -24,7 +25,8 @@ inline constexpr std::array<std::byte, sizeof(f32)> Serialize(f32 val) {
   return Serialize(u.i);
 }
 
-inline constexpr std::array<std::byte, sizeof(f64)> Serialize(f64 val) {
+[[nodiscard]] inline constexpr std::array<std::byte, sizeof(f64)> Serialize(
+    f64 val) {
   union {
     f64 f;
     i64 i;
@@ -33,7 +35,8 @@ inline constexpr std::array<std::byte, sizeof(f64)> Serialize(f64 val) {
   return Serialize(u.i);
 }
 
-inline constexpr f32 Deserialize(std::array<std::byte, sizeof(f32)> data) {
+[[nodiscard]] inline constexpr f32 Deserialize(
+    std::array<std::byte, sizeof(f32)> data) {
   union {
     f32 f;
     i32 i;
@@ -42,7 +45,8 @@ inline constexpr f32 Deserialize(std::array<std::byte, sizeof(f32)> data) {
   return u.f;
 }
 
-inline constexpr f64 Deserialize(std::array<std::byte, sizeof(f64)> data) {
+[[nodiscard]] inline constexpr f64 Deserialize(
+    std::array<std::byte, sizeof(f64)> data) {
   union {
     f64 f;
     i64 i;
