@@ -66,6 +66,7 @@ Result<std::unique_ptr<ServerSocket>> ServerSocket::New(int port) {
             new ServerSocket(std::move(address), port, descriptor)));
   }
 
+  freeaddrinfo(head);
   // NOLINTNEXTLINE(concurrency-mt-unsafe)
   return Result<std::unique_ptr<ServerSocket>>::Err(std::strerror(errno));
 }
