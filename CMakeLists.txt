@@ -8,6 +8,7 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 add_library(srpc OBJECT
   src/protocol/integers.cc
   src/protocol/string.cc
+  src/utils/memory.cc
 )
 target_include_directories(srpc PRIVATE src)
 

@@ -6,6 +6,7 @@ target_include_directories(srpc_tests PRIVATE ../src)
 target_sources(srpc_tests PRIVATE
   protocol/integers.cc
   protocol/string.cc
+  utils/memory.cc
 )
 target_link_libraries(srpc_tests PRIVATE
   srpc

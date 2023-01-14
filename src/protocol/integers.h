@@ -9,6 +9,8 @@
 #include <cstring>
 #include <type_traits>
 
+#include "utils/memory.h"
+
 namespace srpc {
 
 using i8 = std::int8_t;
@@ -55,14 +57,14 @@ inline constexpr std::array<std::byte, sizeof(T)> Serialize(T val) {
     val = Byteswap(val);
   }
   std::array<std::byte, sizeof(T)> data;
-  std::memcpy(data.data(), &val, sizeof(T));
+  Memcpy((std::byte *)data.data(), (std::byte *)&val, sizeof(T));
   return data;
 }
 
 template <typename T>
 inline constexpr T Deserialize(std::array<std::byte, sizeof(T)> data) {
   T val;
-  std::memcpy(&val, data.data(), sizeof(T));
+  Memcpy((std::byte *)&val, (std::byte *)data.data(), sizeof(T));
   if constexpr (std::endian::native == std::endian::big) {
     val = Byteswap(val);
   }
