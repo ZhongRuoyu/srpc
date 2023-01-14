@@ -5,7 +5,7 @@
 #include <cstddef>
 #include <limits>
 
-#include "protocol/integers.h"
+#include "srpc/protocol/integers.h"
 
 namespace srpc {
 

@@ -6,8 +6,8 @@
 #include <memory>
 #include <vector>
 
-#include "network/server_socket.h"
-#include "utils/result.h"
+#include "srpc/network/server_socket.h"
+#include "srpc/utils/result.h"
 
 namespace srpc {
 

@@ -5,16 +5,29 @@ project(srpc)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
+set(SRPC_HDRS
+  include/srpc/network/client.h
+  include/srpc/network/server.h
+  include/srpc/network/server_socket.h
+  include/srpc/network/socket.h
+  include/srpc/network/tcp_ip.h
+  include/srpc/protocol/floats.h
+  include/srpc/protocol/integers.h
+  include/srpc/protocol/string.h
+  include/srpc/utils/memory.h
+  include/srpc/utils/result.h
+)
 set(SRPC_SRCS
-  src/network/client.cc
-  src/network/server_socket.cc
-  src/network/server.cc
-  src/network/socket.cc
-  src/network/tcp_ip.cc
-  src/protocol/string.cc
+  src/srpc/network/client.cc
+  src/srpc/network/server.cc
+  src/srpc/network/server_socket.cc
+  src/srpc/network/socket.cc
+  src/srpc/network/tcp_ip.cc
+  src/srpc/protocol/string.cc
 )
 add_library(srpc SHARED)
-target_include_directories(srpc PUBLIC src)
+target_include_directories(srpc PUBLIC include)
+target_include_directories(srpc PRIVATE src)
 target_sources(srpc PRIVATE ${SRPC_SRCS})
 
 if(BUILD_TESTING)

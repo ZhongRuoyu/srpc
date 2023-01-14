@@ -1,4 +1,4 @@
-#include "network/server.h"
+#include "srpc/network/server.h"
 
 #include <cstddef>
 #include <functional>
@@ -7,8 +7,8 @@
 #include <utility>
 #include <vector>
 
-#include "network/server_socket.h"
-#include "utils/result.h"
+#include "srpc/network/server_socket.h"
+#include "srpc/utils/result.h"
 
 namespace srpc {
 

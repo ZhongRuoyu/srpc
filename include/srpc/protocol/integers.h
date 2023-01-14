@@ -8,7 +8,7 @@
 #include <cstdint>
 #include <type_traits>
 
-#include "utils/memory.h"
+#include "srpc/utils/memory.h"
 
 namespace srpc {
 

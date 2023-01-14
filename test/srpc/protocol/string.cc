@@ -1,4 +1,4 @@
-#include "protocol/string.h"
+#include "srpc/protocol/string.h"
 
 #include <cstddef>
 #include <cstring>
@@ -7,7 +7,7 @@
 
 #include <gtest/gtest.h>
 
-#include "protocol/integers.h"
+#include "srpc/protocol/integers.h"
 
 template <typename... Ts>
 static std::vector<std::byte> MakeBytes(Ts... bytes) {

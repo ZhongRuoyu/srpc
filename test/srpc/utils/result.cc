@@ -1,11 +1,11 @@
-#include "utils/result.h"
+#include "srpc/utils/result.h"
 
 #include <memory>
 #include <utility>
 
 #include <gtest/gtest.h>
 
-#include "protocol/integers.h"
+#include "srpc/protocol/integers.h"
 
 TEST(Utils, Result) {
   auto result1 = srpc::Result<srpc::i32>::Ok(42);

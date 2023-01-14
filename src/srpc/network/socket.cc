@@ -1,4 +1,4 @@
-#include "network/socket.h"
+#include "srpc/network/socket.h"
 
 #include <netdb.h>
 #include <sys/errno.h>
@@ -13,8 +13,8 @@
 #include <utility>
 #include <vector>
 
-#include "protocol/integers.h"
-#include "utils/result.h"
+#include "srpc/protocol/integers.h"
+#include "srpc/utils/result.h"
 
 namespace srpc {
 

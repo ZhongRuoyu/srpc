@@ -1,4 +1,4 @@
-#include "protocol/string.h"
+#include "srpc/protocol/string.h"
 
 #include <algorithm>
 #include <array>
@@ -8,7 +8,7 @@
 #include <string>
 #include <vector>
 
-#include "protocol/integers.h"
+#include "srpc/protocol/integers.h"
 
 namespace srpc {
 
