@@ -29,9 +29,20 @@ TEST(Utils, Result) {
   ASSERT_TRUE(result5.OK());
   ASSERT_NE(result5.Value(), nullptr);
   ASSERT_EQ(*result5.Value(), 2023);
-  auto moved_out = std::move(result5.Value());
+  auto value_moved = std::move(result5.Value());
   ASSERT_TRUE(result5.OK());
   ASSERT_EQ(result5.Value(), nullptr);
-  ASSERT_NE(moved_out, nullptr);
-  ASSERT_EQ(*moved_out, 2023);
+  ASSERT_NE(value_moved, nullptr);
+  ASSERT_EQ(*value_moved, 2023);
+
+  auto result6 = srpc::Result<bool, std::unique_ptr<std::string>>::Err(
+      std::make_unique<std::string>("hello, world"));
+  ASSERT_FALSE(result6.OK());
+  ASSERT_NE(result6.Error(), nullptr);
+  ASSERT_EQ(*result6.Error(), "hello, world");
+  auto error_moved = std::move(result6.Error());
+  ASSERT_FALSE(result6.OK());
+  ASSERT_EQ(result6.Error(), nullptr);
+  ASSERT_NE(error_moved, nullptr);
+  ASSERT_EQ(*error_moved, "hello, world");
 }

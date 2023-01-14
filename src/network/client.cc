@@ -15,7 +15,7 @@ namespace srpc {
 Result<std::unique_ptr<Client>> Client::New(std::string address, int port) {
   auto socket_res = Socket::New(std::move(address), port);
   if (!socket_res.OK()) {
-    return Result<std::unique_ptr<Client>>::Err(socket_res.Error());
+    return Result<std::unique_ptr<Client>>::Err(std::move(socket_res.Error()));
   }
   auto client =
       std::unique_ptr<Client>(new Client(std::move(socket_res.Value())));

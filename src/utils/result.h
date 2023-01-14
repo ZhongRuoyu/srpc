@@ -40,11 +40,19 @@ class Result {
     return *(this->value_);
   }
 
-  [[nodiscard]] constexpr E &Error() {
+  [[nodiscard]] constexpr E &Error() & {
     assert(!this->OK());
     return *(this->error_);
   }
-  [[nodiscard]] constexpr const E &Error() const {
+  [[nodiscard]] constexpr const E &Error() const & {
+    assert(!this->OK());
+    return *(this->error_);
+  }
+  [[nodiscard]] constexpr E &&Error() && {
+    assert(!this->OK());
+    return *(this->error_);
+  }
+  [[nodiscard]] constexpr const E &&Error() const && {
     assert(!this->OK());
     return *(this->error_);
   }
