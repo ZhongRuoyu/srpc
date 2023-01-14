@@ -5,13 +5,15 @@ project(srpc)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-add_library(srpc OBJECT
+set(SRPC_SRCS
   src/protocol/floats.cc
   src/protocol/integers.cc
   src/protocol/string.cc
   src/utils/memory.cc
 )
-target_include_directories(srpc PRIVATE src)
+add_library(srpc SHARED)
+target_include_directories(srpc PUBLIC src)
+target_sources(srpc PRIVATE ${SRPC_SRCS})
 
 if(BUILD_TESTING)
   enable_testing()
