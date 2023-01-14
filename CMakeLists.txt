@@ -6,10 +6,7 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 set(SRPC_SRCS
-  src/protocol/floats.cc
-  src/protocol/integers.cc
   src/protocol/string.cc
-  src/utils/memory.cc
 )
 add_library(srpc SHARED)
 target_include_directories(srpc PUBLIC src)
