@@ -3,12 +3,12 @@
 
 #include <cassert>
 #include <optional>
-#include <string_view>
+#include <string>
 #include <utility>
 
 namespace srpc {
 
-template <typename T, typename E = std::string_view>
+template <typename T, typename E = std::string>
 class Result {
  public:
   Result() = delete;
