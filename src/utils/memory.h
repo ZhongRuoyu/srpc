@@ -9,7 +9,7 @@ inline constexpr void *Memcpy(std::byte *dst, const std::byte *src,
                               std::size_t cnt) {
   auto *result = (std::byte *)dst;
   for (size_t i = 0; i < cnt; ++i) {
-    *(dst++) = (*src++);
+    *(dst++) = *(src++);
   }
   return result;
 }
