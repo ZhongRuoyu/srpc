@@ -66,8 +66,8 @@ Result<std::unique_ptr<ServerSocket>> ServerSocket::New(int port) {
             new ServerSocket(std::move(address), port, descriptor)));
   }
 
-  return Result<std::unique_ptr<ServerSocket>>::Err(
-      "socket configuration failed");
+  // NOLINTNEXTLINE(concurrency-mt-unsafe)
+  return Result<std::unique_ptr<ServerSocket>>::Err(std::strerror(errno));
 }
 
 ServerSocket::ServerSocket(ServerSocket &&other) noexcept

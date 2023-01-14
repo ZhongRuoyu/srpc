@@ -46,7 +46,8 @@ Result<std::unique_ptr<Socket>> Socket::New(std::string address, int port) {
   }
 
   freeaddrinfo(head);
-  return Result<std::unique_ptr<Socket>>::Err("connection failed");
+  // NOLINTNEXTLINE(concurrency-mt-unsafe)
+  return Result<std::unique_ptr<Socket>>::Err(std::strerror(errno));
 }
 
 Socket::Socket(Socket &&other) noexcept
