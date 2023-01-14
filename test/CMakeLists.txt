@@ -4,6 +4,7 @@ find_package(GTest REQUIRED)
 add_executable(srpc_tests)
 target_include_directories(srpc_tests PRIVATE ../src)
 target_sources(srpc_tests PRIVATE
+  protocol/floats.cc
   protocol/integers.cc
   protocol/string.cc
   utils/memory.cc
