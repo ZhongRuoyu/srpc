@@ -6,6 +6,8 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 set(SRPC_SRCS
+  src/network/server_socket.cc
+  src/network/socket.cc
   src/network/tcp_ip.cc
   src/protocol/string.cc
 )
