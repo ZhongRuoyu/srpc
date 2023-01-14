@@ -22,7 +22,7 @@ TEST(Protocol, ByteswapUnsignedInts) {
 }
 
 template <typename... Ts>
-static std::array<std::byte, sizeof...(Ts)> MakeBytes(Ts... bytes) {
+static constexpr std::array<std::byte, sizeof...(Ts)> MakeBytes(Ts... bytes) {
   return std::array<std::byte, sizeof...(Ts)>{std::byte(bytes)...};
 };
 
