@@ -12,11 +12,11 @@ template <typename T, typename E = std::string>
 class Result {
  public:
   Result() = delete;
-  Result(const Result &other) = default;
-  Result(Result &&other) noexcept = default;
+  Result(const Result &) = default;
+  Result(Result &&) noexcept = default;
 
-  Result &operator=(const Result &other) = default;
-  Result &operator=(Result &&other) noexcept = default;
+  Result &operator=(const Result &) = default;
+  Result &operator=(Result &&) noexcept = default;
 
   ~Result() = default;
 
