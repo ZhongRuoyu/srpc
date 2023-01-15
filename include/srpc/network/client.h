@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "srpc/network/socket.h"
+#include "srpc/protocol/integers.h"
 #include "srpc/utils/result.h"
 
 namespace srpc {
@@ -14,7 +15,7 @@ namespace srpc {
 class Client {
  public:
   [[nodiscard]] static Result<std::unique_ptr<Client>> New(
-      const std::string &address, int port);
+      const std::string &address, u16 port);
 
   Client() = delete;
   Client(const Client &) = delete;

@@ -6,13 +6,14 @@
 
 #include "srpc/network/socket.h"
 #include "srpc/network/tcp_ip.h"
+#include "srpc/protocol/integers.h"
 #include "srpc/utils/result.h"
 
 namespace srpc {
 
 class ServerSocket {
  public:
-  [[nodiscard]] static Result<std::unique_ptr<ServerSocket>> New(int port);
+  [[nodiscard]] static Result<std::unique_ptr<ServerSocket>> New(u16 port);
 
   ServerSocket() = delete;
   ServerSocket(const ServerSocket &) = delete;

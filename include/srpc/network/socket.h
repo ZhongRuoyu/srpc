@@ -17,7 +17,7 @@ class Socket {
   friend class ServerSocket;
 
   [[nodiscard]] static Result<std::unique_ptr<Socket>> New(
-      const std::string &address, int port);
+      const std::string &address, u16 port);
 
   Socket() = delete;
   Socket(const Socket &) = delete;

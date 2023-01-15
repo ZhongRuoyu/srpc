@@ -16,11 +16,12 @@
 
 #include "srpc/network/socket.h"
 #include "srpc/network/tcp_ip.h"
+#include "srpc/protocol/integers.h"
 #include "srpc/utils/result.h"
 
 namespace srpc {
 
-Result<std::unique_ptr<ServerSocket>> ServerSocket::New(int port) {
+Result<std::unique_ptr<ServerSocket>> ServerSocket::New(u16 port) {
   addrinfo hints{
       .ai_flags = AI_PASSIVE,
       .ai_family = AF_UNSPEC,

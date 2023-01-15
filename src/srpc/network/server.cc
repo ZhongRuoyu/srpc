@@ -8,11 +8,12 @@
 #include <vector>
 
 #include "srpc/network/server_socket.h"
+#include "srpc/protocol/integers.h"
 #include "srpc/utils/result.h"
 
 namespace srpc {
 
-Result<std::unique_ptr<Server>> Server::New(int port) {
+Result<std::unique_ptr<Server>> Server::New(u16 port) {
   auto server_socket_res = ServerSocket::New(port);
   if (!server_socket_res.OK()) {
     return Result<std::unique_ptr<Server>>::Err(

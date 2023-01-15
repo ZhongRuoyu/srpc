@@ -19,7 +19,7 @@
 namespace srpc {
 
 Result<std::unique_ptr<Socket>> Socket::New(const std::string &address,
-                                            int port) {
+                                            u16 port) {
   addrinfo hints{
       .ai_family = AF_UNSPEC,
       .ai_socktype = SOCK_STREAM,
