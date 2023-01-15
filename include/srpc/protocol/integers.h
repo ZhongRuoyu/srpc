@@ -25,24 +25,22 @@ using u64 = std::uint64_t;
 template <typename T>
 [[nodiscard]] inline constexpr T Byteswap(T val) {
   if constexpr (sizeof(T) == 8) {
-    return ((std::make_unsigned_t<T>(val) & 0xff00000000000000) >> 56) |
-           ((std::make_unsigned_t<T>(val) & 0x00ff000000000000) >> 40) |
-           ((std::make_unsigned_t<T>(val) & 0x0000ff0000000000) >> 24) |
-           ((std::make_unsigned_t<T>(val) & 0x000000ff00000000) >> 8) |
-           ((std::make_unsigned_t<T>(val) & 0x00000000ff000000) << 8) |
-           ((std::make_unsigned_t<T>(val) & 0x0000000000ff0000) << 24) |
-           ((std::make_unsigned_t<T>(val) & 0x000000000000ff00) << 40) |
-           ((std::make_unsigned_t<T>(val) & 0x00000000000000ff) << 56);
+    val = (std::make_unsigned_t<T>(val) & 0x00ff00ff00ff00ff) << 8 |
+          (std::make_unsigned_t<T>(val) & 0xff00ff00ff00ff00) >> 8;
+    return ((std::make_unsigned_t<T>(val) & 0x000000000000ffff) << 48) |
+           ((std::make_unsigned_t<T>(val) & 0x00000000ffff0000) << 16) |
+           ((std::make_unsigned_t<T>(val) & 0x0000ffff00000000) >> 16) |
+           ((std::make_unsigned_t<T>(val) & 0xffff000000000000) >> 48);
   }
   if constexpr (sizeof(T) == 4) {
-    return ((std::make_unsigned_t<T>(val) & 0xff000000) >> 24) |
-           ((std::make_unsigned_t<T>(val) & 0x00ff0000) >> 8) |
+    return ((std::make_unsigned_t<T>(val) & 0x000000ff) << 24) |
            ((std::make_unsigned_t<T>(val) & 0x0000ff00) << 8) |
-           ((std::make_unsigned_t<T>(val) & 0x000000ff) << 24);
+           ((std::make_unsigned_t<T>(val) & 0x00ff0000) >> 8) |
+           ((std::make_unsigned_t<T>(val) & 0xff000000) >> 24);
   }
   if constexpr (sizeof(T) == 2) {
-    return ((std::make_unsigned_t<T>(val) & 0xff00) >> 8) |
-           ((std::make_unsigned_t<T>(val) & 0x00ff) << 8);
+    return ((std::make_unsigned_t<T>(val) & 0x00ff) << 8) |
+           ((std::make_unsigned_t<T>(val) & 0xff00) >> 8);
   }
   if constexpr (sizeof(T) == 1) {
     return val;
