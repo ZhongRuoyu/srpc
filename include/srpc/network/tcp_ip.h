@@ -1,8 +1,6 @@
 #ifndef SRPC_NETWORK_TCP_IP_H_
 #define SRPC_NETWORK_TCP_IP_H_
 
-#include <sys/socket.h>
-
 #include <string>
 
 #include "srpc/protocol/integers.h"
@@ -19,8 +17,6 @@ struct SocketAddress {
   std::string address;
   u16 port;
 };
-
-[[nodiscard]] SocketAddress GetSocketAddress(const sockaddr *addr);
 
 }  // namespace srpc
 
