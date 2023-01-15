@@ -28,7 +28,7 @@ void Server::Listen(const std::function<std::vector<std::byte>(
                         &handler) const {
   this->server_socket_->Listen([handler](std::unique_ptr<Socket> socket) {
     auto req = socket->Receive();
-    auto res = handler(socket->SocketAddress(), req);
+    auto res = handler(socket->Address(), req);
     std::ignore = socket->Send(res);
   });
 }

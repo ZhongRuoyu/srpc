@@ -72,13 +72,12 @@ Result<std::unique_ptr<ServerSocket>> ServerSocket::New(int port) {
 }
 
 ServerSocket::ServerSocket(ServerSocket &&other) noexcept
-    : socket_address_(std::move(other.socket_address_)),
-      descriptor_(other.descriptor_) {
+    : address_(std::move(other.address_)), descriptor_(other.descriptor_) {
   other.descriptor_ = -1;
 }
 
 ServerSocket &ServerSocket::operator=(ServerSocket &&other) noexcept {
-  this->socket_address_ = std::move(other.socket_address_);
+  this->address_ = std::move(other.address_);
   this->descriptor_ = other.descriptor_;
   other.descriptor_ = -1;
   return *this;
@@ -92,9 +91,7 @@ ServerSocket::~ServerSocket() {
 
 ServerSocket::operator int() const { return this->descriptor_; }
 
-const SocketAddress &ServerSocket::SocketAddress() const {
-  return this->socket_address_;
-}
+const SocketAddress &ServerSocket::Address() const { return this->address_; }
 
 void ServerSocket::Listen(
     const std::function<void(std::unique_ptr<Socket>)> &handler) const {
@@ -116,7 +113,7 @@ void ServerSocket::Listen(
   }
 }
 
-ServerSocket::ServerSocket(struct SocketAddress socket_address, int descriptor)
-    : socket_address_(std::move(socket_address)), descriptor_(descriptor) {}
+ServerSocket::ServerSocket(struct SocketAddress address, int descriptor)
+    : address_(std::move(address)), descriptor_(descriptor) {}
 
 }  // namespace srpc

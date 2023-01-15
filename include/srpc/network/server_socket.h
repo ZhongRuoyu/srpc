@@ -25,15 +25,15 @@ class ServerSocket {
 
   [[nodiscard]] operator int() const;
 
-  [[nodiscard]] const SocketAddress &SocketAddress() const;
+  [[nodiscard]] const SocketAddress &Address() const;
 
   void Listen(
       const std::function<void(std::unique_ptr<Socket>)> &handler) const;
 
  private:
-  ServerSocket(struct SocketAddress socket_address, int descriptor);
+  ServerSocket(struct SocketAddress address, int descriptor);
 
-  struct SocketAddress socket_address_;
+  struct SocketAddress address_;
   int descriptor_ = -1;
 };
 

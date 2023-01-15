@@ -53,15 +53,14 @@ Result<std::unique_ptr<Socket>> Socket::New(const std::string &address,
 }
 
 Socket::Socket(Socket &&other) noexcept
-    : socket_address_(std::move(other.socket_address_)),
-      descriptor_(other.descriptor_) {
+    : address_(std::move(other.address_)), descriptor_(other.descriptor_) {
   other.descriptor_ = -1;
 }
 
 Socket::operator int() const { return this->descriptor_; }
 
 Socket &Socket::operator=(Socket &&other) noexcept {
-  this->socket_address_ = std::move(other.socket_address_);
+  this->address_ = std::move(other.address_);
   this->descriptor_ = other.descriptor_;
   other.descriptor_ = -1;
   return *this;
@@ -73,15 +72,13 @@ Socket::~Socket() {
   }
 }
 
-const SocketAddress &Socket::SocketAddress() const {
-  return this->socket_address_;
-}
+const SocketAddress &Socket::Address() const { return this->address_; }
 
-Result<i64> Socket::Send(const std::vector<std::byte> &msg) const {
+Result<i64> Socket::Send(const std::vector<std::byte> &data) const {
   assert(*this != -1);
 
   {
-    auto header = Serialize(i64(std::ssize(msg)));
+    auto header = Serialize(i64(std::ssize(data)));
     i64 res = send(*this, header.data(), header.size(), 0);
     if (res == -1) {
       // NOLINTNEXTLINE(concurrency-mt-unsafe)
@@ -89,23 +86,23 @@ Result<i64> Socket::Send(const std::vector<std::byte> &msg) const {
     }
   }
 
-  i64 msg_sent = 0;
-  while (msg_sent < msg.size()) {
-    i64 res = send(*this, msg.data() + msg_sent, msg.size() - msg_sent, 0);
+  i64 data_sent = 0;
+  while (data_sent < data.size()) {
+    i64 res = send(*this, data.data() + data_sent, data.size() - data_sent, 0);
     if (res == -1) {
       // NOLINTNEXTLINE(concurrency-mt-unsafe)
       return Result<i64>::Err(std::strerror(errno));
     }
-    msg_sent += res;
+    data_sent += res;
   }
 
-  return Result<i64>::Ok(i64(sizeof(i64)) + msg_sent);
+  return Result<i64>::Ok(i64(sizeof(i64)) + data_sent);
 }
 
 Result<std::vector<std::byte>> Socket::Receive() const {
   assert(*this != -1);
 
-  i64 msg_size = 0;
+  i64 data_size = 0;
   {
     std::array<std::byte, sizeof(i64)> header;
     i64 res = recv(*this, header.data(), sizeof(header), 0);
@@ -113,25 +110,25 @@ Result<std::vector<std::byte>> Socket::Receive() const {
       // NOLINTNEXTLINE(concurrency-mt-unsafe)
       return Result<std::vector<std::byte>>::Err(std::strerror(errno));
     }
-    msg_size = Deserialize<i64>(header);
+    data_size = Deserialize<i64>(header);
   }
 
-  std::vector<std::byte> msg(msg_size);
-  i64 msg_received = 0;
-  while (msg_received < msg.size()) {
+  std::vector<std::byte> data(data_size);
+  i64 data_received = 0;
+  while (data_received < data.size()) {
     i64 res =
-        recv(*this, msg.data() + msg_received, msg_size - msg_received, 0);
+        recv(*this, data.data() + data_received, data_size - data_received, 0);
     if (res == -1) {
       // NOLINTNEXTLINE(concurrency-mt-unsafe)
       return Result<std::vector<std::byte>>::Err(std::strerror(errno));
     }
-    msg_received += res;
+    data_received += res;
   }
 
-  return Result<std::vector<std::byte>>::Ok(std::move(msg));
+  return Result<std::vector<std::byte>>::Ok(std::move(data));
 }
 
-Socket::Socket(struct SocketAddress socket_address, int descriptor)
-    : socket_address_(std::move(socket_address)), descriptor_(descriptor) {}
+Socket::Socket(SocketAddress address, int descriptor)
+    : address_(std::move(address)), descriptor_(descriptor) {}
 
 }  // namespace srpc

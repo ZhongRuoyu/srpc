@@ -30,15 +30,15 @@ class Socket {
 
   [[nodiscard]] operator int() const;
 
-  [[nodiscard]] const SocketAddress &SocketAddress() const;
+  [[nodiscard]] const SocketAddress &Address() const;
 
-  [[nodiscard]] Result<i64> Send(const std::vector<std::byte> &msg) const;
+  [[nodiscard]] Result<i64> Send(const std::vector<std::byte> &data) const;
   [[nodiscard]] Result<std::vector<std::byte>> Receive() const;
 
  private:
-  Socket(struct SocketAddress socket_address, int descriptor);
+  Socket(SocketAddress address, int descriptor);
 
-  struct SocketAddress socket_address_;
+  SocketAddress address_;
   int descriptor_ = -1;
 };
 
