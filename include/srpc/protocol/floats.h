@@ -15,6 +15,7 @@ using f32 = float;
 static_assert(std::numeric_limits<double>::is_iec559);
 using f64 = double;
 
+template <>
 [[nodiscard]] inline constexpr std::array<std::byte, sizeof(f32)> Serialize(
     f32 val) {
   union {
@@ -25,6 +26,7 @@ using f64 = double;
   return Serialize(u.i);
 }
 
+template <>
 [[nodiscard]] inline constexpr std::array<std::byte, sizeof(f64)> Serialize(
     f64 val) {
   union {
@@ -35,6 +37,7 @@ using f64 = double;
   return Serialize(u.i);
 }
 
+template <>
 [[nodiscard]] inline constexpr f32 Deserialize(
     std::array<std::byte, sizeof(f32)> data) {
   union {
@@ -45,6 +48,7 @@ using f64 = double;
   return u.f;
 }
 
+template <>
 [[nodiscard]] inline constexpr f64 Deserialize(
     std::array<std::byte, sizeof(f64)> data) {
   union {
