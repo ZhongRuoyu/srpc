@@ -1,4 +1,4 @@
-#include "srpc/protocol/string.h"
+#include "srpc/protocol/strings.h"
 
 #include <cstddef>
 #include <cstring>
@@ -27,6 +27,31 @@ TEST(Protocol, SerializeStrings) {
       srpc::Serialize(std::string("hello, world")));
   assert_eq(MakeBytes(0, 0, 0, 0, 0, 0, 0, 0),
             srpc::Serialize(std::string("")));
+}
+
+TEST(Protocol, SerializeCStrings) {
+  auto assert_eq = [](auto expected, auto actual) {
+    ASSERT_EQ(expected.size(), actual.size());
+    for (std::size_t i = 0; i < expected.size(); ++i) {
+      ASSERT_EQ(expected[i], actual[i]);
+    }
+  };
+
+  assert_eq(
+      MakeBytes((srpc::u8)strlen("hello, world"), 0, 0, 0, 0, 0, 0, 0, 'h', 'e',
+                'l', 'l', 'o', ',', ' ', 'w', 'o', 'r', 'l', 'd'),
+      srpc::Serialize("hello, world"));
+  assert_eq(MakeBytes(0, 0, 0, 0, 0, 0, 0, 0), srpc::Serialize(""));
+
+  char str1[]{"hello, world"};
+  assert_eq(
+      MakeBytes((srpc::u8)strlen("hello, world"), 0, 0, 0, 0, 0, 0, 0, 'h', 'e',
+                'l', 'l', 'o', ',', ' ', 'w', 'o', 'r', 'l', 'd'),
+      srpc::Serialize(str1));
+
+  char str2[]{'s', 'r', 'p', 'c', '\0'};
+  assert_eq(MakeBytes(4, 0, 0, 0, 0, 0, 0, 0, 's', 'r', 'p', 'c'),
+            srpc::Serialize(str2));
 }
 
 TEST(Protocol, DeserializeStrings) {

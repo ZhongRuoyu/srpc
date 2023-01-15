@@ -5,7 +5,7 @@ add_executable(srpc_tests)
 target_sources(srpc_tests PRIVATE
   srpc/protocol/floats.cc
   srpc/protocol/integers.cc
-  srpc/protocol/string.cc
+  srpc/protocol/strings.cc
   srpc/utils/memory.cc
   srpc/utils/result.cc
 )

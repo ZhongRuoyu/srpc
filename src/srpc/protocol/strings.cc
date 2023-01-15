@@ -1,4 +1,4 @@
-#include "srpc/protocol/string.h"
+#include "srpc/protocol/strings.h"
 
 #include <algorithm>
 #include <array>
@@ -20,6 +20,14 @@ std::vector<std::byte> Serialize(const std::string &str) {
   std::transform(str.begin(), str.end(), std::back_inserter(data),
                  [](char c) { return std::byte(c); });
   return data;
+}
+
+std::vector<std::byte> Serialize(const char *str) {
+  return Serialize(std::string(str));
+}
+
+std::vector<std::byte> Serialize(char *str) {
+  return Serialize(std::string(str));
 }
 
 std::optional<std::string> Deserialize(const std::vector<std::byte> &data) {
