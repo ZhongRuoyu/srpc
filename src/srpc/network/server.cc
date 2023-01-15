@@ -23,12 +23,12 @@ Result<std::unique_ptr<Server>> Server::New(int port) {
   return Result<std::unique_ptr<Server>>::Ok(std::move(server));
 }
 
-void Server::Listen(
-    const std::function<std::vector<std::byte>(Result<std::vector<std::byte>>)>
-        &handler) const {
+void Server::Listen(const std::function<std::vector<std::byte>(
+                        const SocketAddress &, Result<std::vector<std::byte>>)>
+                        &handler) const {
   this->server_socket_->Listen([handler](std::unique_ptr<Socket> socket) {
     auto req = socket->Receive();
-    auto res = handler(req);
+    auto res = handler(socket->SocketAddress(), req);
     std::ignore = socket->Send(res);
   });
 }

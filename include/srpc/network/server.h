@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "srpc/network/server_socket.h"
+#include "srpc/network/tcp_ip.h"
 #include "srpc/utils/result.h"
 
 namespace srpc {
@@ -25,7 +26,8 @@ class Server {
   ~Server() = default;
 
   void Listen(const std::function<std::vector<std::byte>(
-                  Result<std::vector<std::byte>>)> &handler) const;
+                  const SocketAddress &, Result<std::vector<std::byte>>)>
+                  &handler) const;
 
  private:
   explicit Server(std::unique_ptr<ServerSocket> server_socket);
