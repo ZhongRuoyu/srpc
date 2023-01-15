@@ -30,6 +30,9 @@ target_include_directories(srpc PUBLIC include)
 target_include_directories(srpc PRIVATE src)
 target_sources(srpc PRIVATE ${SRPC_SRCS})
 
+find_package(Threads REQUIRED)
+target_link_libraries(srpc PUBLIC Threads::Threads)
+
 if(BUILD_TESTING)
   enable_testing()
   add_subdirectory(test)
