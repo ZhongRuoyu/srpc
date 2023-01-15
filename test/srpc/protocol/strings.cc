@@ -9,6 +9,8 @@
 
 #include "srpc/protocol/integers.h"
 
+using namespace srpc;
+
 template <typename... Ts>
 static std::vector<std::byte> MakeBytes(Ts... bytes) {
   return std::vector<std::byte>{std::byte(bytes)...};
@@ -21,12 +23,10 @@ TEST(Protocol, SerializeStrings) {
       ASSERT_EQ(expected[i], actual[i]);
     }
   };
-  assert_eq(
-      MakeBytes((srpc::u8)strlen("hello, world"), 0, 0, 0, 0, 0, 0, 0, 'h', 'e',
-                'l', 'l', 'o', ',', ' ', 'w', 'o', 'r', 'l', 'd'),
-      srpc::Serialize(std::string("hello, world")));
-  assert_eq(MakeBytes(0, 0, 0, 0, 0, 0, 0, 0),
-            srpc::Serialize(std::string("")));
+  assert_eq(MakeBytes((u8)strlen("hello, world"), 0, 0, 0, 0, 0, 0, 0, 'h', 'e',
+                      'l', 'l', 'o', ',', ' ', 'w', 'o', 'r', 'l', 'd'),
+            Serialize(std::string("hello, world")));
+  assert_eq(MakeBytes(0, 0, 0, 0, 0, 0, 0, 0), Serialize(std::string("")));
 }
 
 TEST(Protocol, SerializeCStrings) {
@@ -37,28 +37,25 @@ TEST(Protocol, SerializeCStrings) {
     }
   };
 
-  assert_eq(
-      MakeBytes((srpc::u8)strlen("hello, world"), 0, 0, 0, 0, 0, 0, 0, 'h', 'e',
-                'l', 'l', 'o', ',', ' ', 'w', 'o', 'r', 'l', 'd'),
-      srpc::Serialize("hello, world"));
-  assert_eq(MakeBytes(0, 0, 0, 0, 0, 0, 0, 0), srpc::Serialize(""));
+  assert_eq(MakeBytes((u8)strlen("hello, world"), 0, 0, 0, 0, 0, 0, 0, 'h', 'e',
+                      'l', 'l', 'o', ',', ' ', 'w', 'o', 'r', 'l', 'd'),
+            Serialize("hello, world"));
+  assert_eq(MakeBytes(0, 0, 0, 0, 0, 0, 0, 0), Serialize(""));
 
   char str1[]{"hello, world"};
-  assert_eq(
-      MakeBytes((srpc::u8)strlen("hello, world"), 0, 0, 0, 0, 0, 0, 0, 'h', 'e',
-                'l', 'l', 'o', ',', ' ', 'w', 'o', 'r', 'l', 'd'),
-      srpc::Serialize(str1));
+  assert_eq(MakeBytes((u8)strlen("hello, world"), 0, 0, 0, 0, 0, 0, 0, 'h', 'e',
+                      'l', 'l', 'o', ',', ' ', 'w', 'o', 'r', 'l', 'd'),
+            Serialize(str1));
 
   char str2[]{'s', 'r', 'p', 'c', '\0'};
   assert_eq(MakeBytes(4, 0, 0, 0, 0, 0, 0, 0, 's', 'r', 'p', 'c'),
-            srpc::Serialize(str2));
+            Serialize(str2));
 }
 
 TEST(Protocol, DeserializeStrings) {
   ASSERT_EQ(std::string("hello, world"),
-            srpc::Deserialize(MakeBytes((srpc::u8)strlen("hello, world"), 0, 0,
-                                        0, 0, 0, 0, 0, 'h', 'e', 'l', 'l', 'o',
-                                        ',', ' ', 'w', 'o', 'r', 'l', 'd')));
-  ASSERT_EQ(std::string(""),
-            srpc::Deserialize(MakeBytes(0, 0, 0, 0, 0, 0, 0, 0)));
+            Deserialize(MakeBytes((u8)strlen("hello, world"), 0, 0, 0, 0, 0, 0,
+                                  0, 'h', 'e', 'l', 'l', 'o', ',', ' ', 'w',
+                                  'o', 'r', 'l', 'd')));
+  ASSERT_EQ(std::string(""), Deserialize(MakeBytes(0, 0, 0, 0, 0, 0, 0, 0)));
 }

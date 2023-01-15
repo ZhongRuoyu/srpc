@@ -5,6 +5,8 @@
 
 #include <gtest/gtest.h>
 
+using namespace srpc;
+
 template <typename... Ts>
 static constexpr std::array<std::byte, sizeof...(Ts)> MakeBytes(Ts... bytes) {
   return std::array<std::byte, sizeof...(Ts)>{std::byte(bytes)...};
@@ -19,7 +21,7 @@ TEST(Utils, Memcpy) {
   };
   auto check = [&assert_eq](auto data) {
     std::array<std::byte, data.size()> tmp;
-    auto result = srpc::Memcpy(tmp.data(), data.data(), data.size());
+    auto result = Memcpy(tmp.data(), data.data(), data.size());
     assert_eq(data, tmp);
     ASSERT_EQ(tmp.data(), result);
   };
@@ -31,7 +33,7 @@ TEST(Utils, Memcpy) {
 template <typename T, std::size_t N>
 static constexpr bool CheckMemcpyIsConstexpr(std::array<T, N> arr) {
   std::array<T, N> tmp;
-  auto result = srpc::Memcpy(tmp.data(), arr.data(), arr.size());
+  auto result = Memcpy(tmp.data(), arr.data(), arr.size());
   if (result != tmp.data()) {
     return false;
   }

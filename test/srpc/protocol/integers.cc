@@ -5,20 +5,20 @@
 
 #include <gtest/gtest.h>
 
+using namespace srpc;
+
 TEST(Protocol, ByteswapSignedInts) {
-  ASSERT_EQ(srpc::i64(0x0df0ad8b0df0ad8b),
-            srpc::Byteswap(srpc::i64(0x8badf00d8badf00d)));
-  ASSERT_EQ(srpc::i32(0x0df0ad8b), srpc::Byteswap(srpc::i32(0x8badf00d)));
-  ASSERT_EQ(srpc::i16(0x0df0), srpc::Byteswap(srpc::i16(0xf00d)));
-  ASSERT_EQ(srpc::i8(0xf0), srpc::Byteswap(srpc::i8(0xf0)));
+  ASSERT_EQ(i64(0x0df0ad8b0df0ad8b), Byteswap(i64(0x8badf00d8badf00d)));
+  ASSERT_EQ(i32(0x0df0ad8b), Byteswap(i32(0x8badf00d)));
+  ASSERT_EQ(i16(0x0df0), Byteswap(i16(0xf00d)));
+  ASSERT_EQ(i8(0xf0), Byteswap(i8(0xf0)));
 }
 
 TEST(Protocol, ByteswapUnsignedInts) {
-  ASSERT_EQ(srpc::u64(0xefbeaddeefbeadde),
-            srpc::Byteswap(srpc::u64(0xdeadbeefdeadbeef)));
-  ASSERT_EQ(srpc::u32(0xefbeadde), srpc::Byteswap(srpc::u32(0xdeadbeef)));
-  ASSERT_EQ(srpc::u16(0xefbe), srpc::Byteswap(srpc::u16(0xbeef)));
-  ASSERT_EQ(srpc::u8(0xbe), srpc::Byteswap(srpc::u8(0xbe)));
+  ASSERT_EQ(u64(0xefbeaddeefbeadde), Byteswap(u64(0xdeadbeefdeadbeef)));
+  ASSERT_EQ(u32(0xefbeadde), Byteswap(u32(0xdeadbeef)));
+  ASSERT_EQ(u16(0xefbe), Byteswap(u16(0xbeef)));
+  ASSERT_EQ(u8(0xbe), Byteswap(u8(0xbe)));
 }
 
 template <typename... Ts>
@@ -34,11 +34,10 @@ TEST(Protocol, SerializeSignedInts) {
     }
   };
   assert_eq(MakeBytes(0xef, 0xbe, 0xad, 0xde, 0xef, 0xbe, 0xad, 0xde),
-            srpc::Serialize(srpc::i64(0xdeadbeefdeadbeef)));
-  assert_eq(MakeBytes(0xef, 0xbe, 0xad, 0xde),
-            srpc::Serialize(srpc::i32(0xdeadbeef)));
-  assert_eq(MakeBytes(0xef, 0xbe), srpc::Serialize(srpc::i16(0xbeef)));
-  assert_eq(MakeBytes(0xbe), srpc::Serialize(srpc::i8(0xbe)));
+            Serialize(i64(0xdeadbeefdeadbeef)));
+  assert_eq(MakeBytes(0xef, 0xbe, 0xad, 0xde), Serialize(i32(0xdeadbeef)));
+  assert_eq(MakeBytes(0xef, 0xbe), Serialize(i16(0xbeef)));
+  assert_eq(MakeBytes(0xbe), Serialize(i8(0xbe)));
 }
 
 TEST(Protocol, SerializeUnsignedInts) {
@@ -49,11 +48,10 @@ TEST(Protocol, SerializeUnsignedInts) {
     }
   };
   assert_eq(MakeBytes(0xef, 0xbe, 0xad, 0xde, 0xef, 0xbe, 0xad, 0xde),
-            srpc::Serialize(srpc::u64(0xdeadbeefdeadbeef)));
-  assert_eq(MakeBytes(0xef, 0xbe, 0xad, 0xde),
-            srpc::Serialize(srpc::u32(0xdeadbeef)));
-  assert_eq(MakeBytes(0xef, 0xbe), srpc::Serialize(srpc::u16(0xbeef)));
-  assert_eq(MakeBytes(0xbe), srpc::Serialize(srpc::u8(0xbe)));
+            Serialize(u64(0xdeadbeefdeadbeef)));
+  assert_eq(MakeBytes(0xef, 0xbe, 0xad, 0xde), Serialize(u32(0xdeadbeef)));
+  assert_eq(MakeBytes(0xef, 0xbe), Serialize(u16(0xbeef)));
+  assert_eq(MakeBytes(0xbe), Serialize(u8(0xbe)));
 }
 
 TEST(Protocol, DeserializeSignedInts) {
@@ -63,14 +61,13 @@ TEST(Protocol, DeserializeSignedInts) {
       ASSERT_EQ(expected[i], actual[i]);
     }
   };
-  ASSERT_EQ(srpc::i64(0xdeadbeefdeadbeef),
-            srpc::Deserialize<srpc::i64>(
+  ASSERT_EQ(i64(0xdeadbeefdeadbeef),
+            Deserialize<i64>(
                 MakeBytes(0xef, 0xbe, 0xad, 0xde, 0xef, 0xbe, 0xad, 0xde)));
-  ASSERT_EQ(srpc::i32(0xdeadbeef),
-            srpc::Deserialize<srpc::i32>(MakeBytes(0xef, 0xbe, 0xad, 0xde)));
-  ASSERT_EQ(srpc::i16(0xbeef),
-            srpc::Deserialize<srpc::i16>(MakeBytes(0xef, 0xbe)));
-  ASSERT_EQ(srpc::i8(0xbe), srpc::Deserialize<srpc::i8>(MakeBytes(0xbe)));
+  ASSERT_EQ(i32(0xdeadbeef),
+            Deserialize<i32>(MakeBytes(0xef, 0xbe, 0xad, 0xde)));
+  ASSERT_EQ(i16(0xbeef), Deserialize<i16>(MakeBytes(0xef, 0xbe)));
+  ASSERT_EQ(i8(0xbe), Deserialize<i8>(MakeBytes(0xbe)));
 }
 
 TEST(Protocol, DeserializeUnsignedInts) {
@@ -80,12 +77,11 @@ TEST(Protocol, DeserializeUnsignedInts) {
       ASSERT_EQ(expected[i], actual[i]);
     }
   };
-  ASSERT_EQ(srpc::u64(0xdeadbeefdeadbeef),
-            srpc::Deserialize<srpc::u64>(
+  ASSERT_EQ(u64(0xdeadbeefdeadbeef),
+            Deserialize<u64>(
                 MakeBytes(0xef, 0xbe, 0xad, 0xde, 0xef, 0xbe, 0xad, 0xde)));
-  ASSERT_EQ(srpc::u32(0xdeadbeef),
-            srpc::Deserialize<srpc::u32>(MakeBytes(0xef, 0xbe, 0xad, 0xde)));
-  ASSERT_EQ(srpc::u16(0xbeef),
-            srpc::Deserialize<srpc::u16>(MakeBytes(0xef, 0xbe)));
-  ASSERT_EQ(srpc::u8(0xbe), srpc::Deserialize<srpc::u8>(MakeBytes(0xbe)));
+  ASSERT_EQ(u32(0xdeadbeef),
+            Deserialize<u32>(MakeBytes(0xef, 0xbe, 0xad, 0xde)));
+  ASSERT_EQ(u16(0xbeef), Deserialize<u16>(MakeBytes(0xef, 0xbe)));
+  ASSERT_EQ(u8(0xbe), Deserialize<u8>(MakeBytes(0xbe)));
 }
