@@ -13,8 +13,8 @@ namespace srpc {
 
 class Client {
  public:
-  [[nodiscard]] static Result<std::unique_ptr<Client>> New(std::string address,
-                                                           int port);
+  [[nodiscard]] static Result<std::unique_ptr<Client>> New(
+      const std::string &address, int port);
 
   Client() = delete;
   Client(const Client &) = delete;

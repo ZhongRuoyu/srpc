@@ -18,7 +18,8 @@
 
 namespace srpc {
 
-Result<std::unique_ptr<Socket>> Socket::New(std::string address, int port) {
+Result<std::unique_ptr<Socket>> Socket::New(const std::string &address,
+                                            int port) {
   addrinfo hints{
       .ai_family = AF_UNSPEC,
       .ai_socktype = SOCK_STREAM,
@@ -40,9 +41,10 @@ Result<std::unique_ptr<Socket>> Socket::New(std::string address, int port) {
       continue;
     }
 
+    auto addr = GetSocketAddress(p->ai_addr);
     freeaddrinfo(head);
-    return Result<std::unique_ptr<Socket>>::Ok(std::unique_ptr<Socket>(
-        new Socket(std::move(address), port, descriptor)));
+    return Result<std::unique_ptr<Socket>>::Ok(
+        std::unique_ptr<Socket>(new Socket(std::move(addr), descriptor)));
   }
 
   freeaddrinfo(head);
@@ -51,8 +53,7 @@ Result<std::unique_ptr<Socket>> Socket::New(std::string address, int port) {
 }
 
 Socket::Socket(Socket &&other) noexcept
-    : address_(std::move(other.address_)),
-      port_(other.port_),
+    : socket_address_(std::move(other.socket_address_)),
       descriptor_(other.descriptor_) {
   other.descriptor_ = -1;
 }
@@ -60,8 +61,7 @@ Socket::Socket(Socket &&other) noexcept
 Socket::operator int() const { return this->descriptor_; }
 
 Socket &Socket::operator=(Socket &&other) noexcept {
-  this->address_ = std::move(other.address_);
-  this->port_ = other.port_;
+  this->socket_address_ = std::move(other.socket_address_);
   this->descriptor_ = other.descriptor_;
   other.descriptor_ = -1;
   return *this;
@@ -73,9 +73,9 @@ Socket::~Socket() {
   }
 }
 
-const std::string &Socket::Address() const { return this->address_; }
-
-int Socket::Port() const { return this->port_; }
+const SocketAddress &Socket::SocketAddress() const {
+  return this->socket_address_;
+}
 
 Result<i64> Socket::Send(const std::vector<std::byte> &msg) const {
   assert(*this != -1);
@@ -131,7 +131,7 @@ Result<std::vector<std::byte>> Socket::Receive() const {
   return Result<std::vector<std::byte>>::Ok(std::move(msg));
 }
 
-Socket::Socket(std::string address, int port, int descriptor)
-    : address_(std::move(address)), port_(port), descriptor_(descriptor) {}
+Socket::Socket(struct SocketAddress socket_address, int descriptor)
+    : socket_address_(std::move(socket_address)), descriptor_(descriptor) {}
 
 }  // namespace srpc

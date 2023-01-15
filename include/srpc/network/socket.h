@@ -6,6 +6,7 @@
 #include <string>
 #include <vector>
 
+#include "srpc/network/tcp_ip.h"
 #include "srpc/protocol/integers.h"
 #include "srpc/utils/result.h"
 
@@ -15,8 +16,8 @@ class Socket {
  public:
   friend class ServerSocket;
 
-  [[nodiscard]] static Result<std::unique_ptr<Socket>> New(std::string address,
-                                                           int port);
+  [[nodiscard]] static Result<std::unique_ptr<Socket>> New(
+      const std::string &address, int port);
 
   Socket() = delete;
   Socket(const Socket &) = delete;
@@ -29,17 +30,15 @@ class Socket {
 
   [[nodiscard]] operator int() const;
 
-  [[nodiscard]] const std::string &Address() const;
-  [[nodiscard]] int Port() const;
+  [[nodiscard]] const SocketAddress &SocketAddress() const;
 
   [[nodiscard]] Result<i64> Send(const std::vector<std::byte> &msg) const;
   [[nodiscard]] Result<std::vector<std::byte>> Receive() const;
 
  private:
-  Socket(std::string address, int port, int descriptor);
+  Socket(struct SocketAddress socket_address, int descriptor);
 
-  std::string address_;
-  int port_ = -1;
+  struct SocketAddress socket_address_;
   int descriptor_ = -1;
 };
 

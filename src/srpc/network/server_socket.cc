@@ -53,7 +53,7 @@ Result<std::unique_ptr<ServerSocket>> ServerSocket::New(int port) {
       continue;
     }
 
-    auto address = GetInAddr(p->ai_addr);
+    auto addr = GetSocketAddress(p->ai_addr);
     freeaddrinfo(head);
     if (listen(descriptor, SOMAXCONN) == -1) {
       close(descriptor);
@@ -63,7 +63,7 @@ Result<std::unique_ptr<ServerSocket>> ServerSocket::New(int port) {
 
     return Result<std::unique_ptr<ServerSocket>>::Ok(
         std::unique_ptr<ServerSocket>(
-            new ServerSocket(std::move(address), port, descriptor)));
+            new ServerSocket(std::move(addr), descriptor)));
   }
 
   freeaddrinfo(head);
@@ -72,15 +72,13 @@ Result<std::unique_ptr<ServerSocket>> ServerSocket::New(int port) {
 }
 
 ServerSocket::ServerSocket(ServerSocket &&other) noexcept
-    : address_(std::move(other.address_)),
-      port_(other.port_),
+    : socket_address_(std::move(other.socket_address_)),
       descriptor_(other.descriptor_) {
   other.descriptor_ = -1;
 }
 
 ServerSocket &ServerSocket::operator=(ServerSocket &&other) noexcept {
-  this->address_ = std::move(other.address_);
-  this->port_ = other.port_;
+  this->socket_address_ = std::move(other.socket_address_);
   this->descriptor_ = other.descriptor_;
   other.descriptor_ = -1;
   return *this;
@@ -94,9 +92,9 @@ ServerSocket::~ServerSocket() {
 
 ServerSocket::operator int() const { return this->descriptor_; }
 
-const std::string &ServerSocket::Address() const { return this->address_; }
-
-int ServerSocket::Port() const { return this->port_; }
+const SocketAddress &ServerSocket::SocketAddress() const {
+  return this->socket_address_;
+}
 
 void ServerSocket::Listen(
     const std::function<void(std::unique_ptr<Socket>)> &handler) const {
@@ -110,16 +108,15 @@ void ServerSocket::Listen(
       continue;
     }
 
-    auto from_addr = GetInAddr((sockaddr *)&from);
-    auto from_port = GetInPort((sockaddr *)&from);
+    auto from_addr = GetSocketAddress((sockaddr *)&from);
     std::unique_ptr<Socket> socket(
-        new Socket(std::move(from_addr), from_port, descriptor));
+        new Socket(std::move(from_addr), descriptor));
     std::thread work(handler, std::move(socket));
     work.detach();
   }
 }
 
-ServerSocket::ServerSocket(std::string address, int port, int descriptor)
-    : address_(std::move(address)), port_(port), descriptor_(descriptor) {}
+ServerSocket::ServerSocket(struct SocketAddress socket_address, int descriptor)
+    : socket_address_(std::move(socket_address)), descriptor_(descriptor) {}
 
 }  // namespace srpc

@@ -5,11 +5,22 @@
 
 #include <string>
 
+#include "srpc/protocol/integers.h"
+
 namespace srpc {
 
-[[nodiscard]] std::string GetInAddr(const sockaddr *addr);
+enum InternetProtocol {
+  IPv4 = 4,
+  IPv6 = 6,
+};
 
-[[nodiscard]] int GetInPort(const sockaddr *addr);
+struct SocketAddress {
+  InternetProtocol protocol;
+  std::string address;
+  u16 port;
+};
+
+[[nodiscard]] SocketAddress GetSocketAddress(const sockaddr *addr);
 
 }  // namespace srpc
 

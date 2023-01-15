@@ -3,9 +3,9 @@
 
 #include <functional>
 #include <memory>
-#include <string>
 
 #include "srpc/network/socket.h"
+#include "srpc/network/tcp_ip.h"
 #include "srpc/utils/result.h"
 
 namespace srpc {
@@ -25,17 +25,15 @@ class ServerSocket {
 
   [[nodiscard]] operator int() const;
 
-  [[nodiscard]] const std::string &Address() const;
-  [[nodiscard]] int Port() const;
+  [[nodiscard]] const SocketAddress &SocketAddress() const;
 
   void Listen(
       const std::function<void(std::unique_ptr<Socket>)> &handler) const;
 
  private:
-  ServerSocket(std::string address, int port, int descriptor);
+  ServerSocket(struct SocketAddress socket_address, int descriptor);
 
-  std::string address_;
-  int port_ = -1;
+  struct SocketAddress socket_address_;
   int descriptor_ = -1;
 };
 
