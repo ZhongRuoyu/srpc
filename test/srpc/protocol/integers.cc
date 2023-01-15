@@ -7,18 +7,18 @@
 
 using namespace srpc;
 
-TEST(Protocol, ByteswapSignedInts) {
-  ASSERT_EQ(i64(0x0df0ad8b0df0ad8b), Byteswap(i64(0x8badf00d8badf00d)));
-  ASSERT_EQ(i32(0x0df0ad8b), Byteswap(i32(0x8badf00d)));
-  ASSERT_EQ(i16(0x0df0), Byteswap(i16(0xf00d)));
-  ASSERT_EQ(i8(0xf0), Byteswap(i8(0xf0)));
+TEST(Protocol, ReverseBytesOfSignedInts) {
+  ASSERT_EQ(i64(0x0df0ad8b0df0ad8b), ReverseBytes(i64(0x8badf00d8badf00d)));
+  ASSERT_EQ(i32(0x0df0ad8b), ReverseBytes(i32(0x8badf00d)));
+  ASSERT_EQ(i16(0x0df0), ReverseBytes(i16(0xf00d)));
+  ASSERT_EQ(i8(0xf0), ReverseBytes(i8(0xf0)));
 }
 
-TEST(Protocol, ByteswapUnsignedInts) {
-  ASSERT_EQ(u64(0xefbeaddeefbeadde), Byteswap(u64(0xdeadbeefdeadbeef)));
-  ASSERT_EQ(u32(0xefbeadde), Byteswap(u32(0xdeadbeef)));
-  ASSERT_EQ(u16(0xefbe), Byteswap(u16(0xbeef)));
-  ASSERT_EQ(u8(0xbe), Byteswap(u8(0xbe)));
+TEST(Protocol, ReverseBytesOfUnsignedInts) {
+  ASSERT_EQ(u64(0xefbeaddeefbeadde), ReverseBytes(u64(0xdeadbeefdeadbeef)));
+  ASSERT_EQ(u32(0xefbeadde), ReverseBytes(u32(0xdeadbeef)));
+  ASSERT_EQ(u16(0xefbe), ReverseBytes(u16(0xbeef)));
+  ASSERT_EQ(u8(0xbe), ReverseBytes(u8(0xbe)));
 }
 
 template <typename... Ts>
