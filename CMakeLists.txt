@@ -22,7 +22,6 @@ set(SRPC_SRCS
   src/srpc/network/server.cc
   src/srpc/network/server_socket.cc
   src/srpc/network/socket.cc
-  src/srpc/network/tcp_ip.cc
   src/srpc/protocol/strings.cc
 )
 add_library(srpc SHARED)
