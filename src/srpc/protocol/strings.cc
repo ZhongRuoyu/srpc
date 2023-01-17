@@ -14,7 +14,7 @@ namespace srpc {
 
 std::vector<std::byte> Serialize(const std::string &str) {
   std::vector<std::byte> data;
-  auto len = Serialize(i64(str.size()));
+  auto len = Serialize(i64(std::ssize(str)));
   data.reserve(len.size() + str.size());
   std::copy(len.begin(), len.end(), std::back_inserter(data));
   std::transform(str.begin(), str.end(), std::back_inserter(data),

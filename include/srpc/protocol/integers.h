@@ -12,6 +12,8 @@
 
 namespace srpc {
 
+// NOLINTBEGIN(readability-identifier-naming)
+
 using i8 = std::int8_t;
 using i16 = std::int16_t;
 using i32 = std::int32_t;
@@ -21,6 +23,8 @@ using u8 = std::uint8_t;
 using u16 = std::uint16_t;
 using u32 = std::uint32_t;
 using u64 = std::uint64_t;
+
+// NOLINTEND(readability-identifier-naming)
 
 template <typename T>
 [[nodiscard]] inline constexpr T ReverseBytes(T val) {
@@ -55,7 +59,7 @@ template <typename T>
     val = ReverseBytes(val);
   }
   std::array<std::byte, sizeof(T)> data;
-  Memcpy((std::byte *)data.data(), (std::byte *)&val, sizeof(T));
+  Memcpy(data.data(), (std::byte *)(&val), sizeof(T));
   return data;
 }
 
@@ -63,7 +67,7 @@ template <typename T>
 [[nodiscard]] inline constexpr T Deserialize(
     std::array<std::byte, sizeof(T)> data) {
   T val;
-  Memcpy((std::byte *)&val, (std::byte *)data.data(), sizeof(T));
+  Memcpy((std::byte *)(&val), data.data(), sizeof(T));
   if constexpr (std::endian::native == std::endian::big) {
     val = ReverseBytes(val);
   }

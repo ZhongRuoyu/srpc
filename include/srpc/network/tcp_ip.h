@@ -8,8 +8,8 @@
 namespace srpc {
 
 enum InternetProtocol {
-  IPv4 = 4,
-  IPv6 = 6,
+  kIPv4 = 4,
+  kIPv6 = 6,
 };
 
 struct SocketAddress {

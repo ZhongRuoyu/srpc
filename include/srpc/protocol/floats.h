@@ -9,11 +9,15 @@
 
 namespace srpc {
 
+// NOLINTBEGIN(readability-identifier-naming)
+
 static_assert(std::numeric_limits<float>::is_iec559);
 using f32 = float;
 
 static_assert(std::numeric_limits<double>::is_iec559);
 using f64 = double;
+
+// NOLINTEND(readability-identifier-naming)
 
 template <>
 [[nodiscard]] inline constexpr std::array<std::byte, sizeof(f32)> Serialize(
