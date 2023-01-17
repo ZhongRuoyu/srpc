@@ -24,8 +24,6 @@ class ServerSocket {
 
   ~ServerSocket();
 
-  [[nodiscard]] operator int() const;
-
   [[nodiscard]] const SocketAddress &Address() const;
 
   void Listen(

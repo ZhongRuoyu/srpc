@@ -115,23 +115,21 @@ ServerSocket &ServerSocket::operator=(ServerSocket &&other) noexcept {
 }
 
 ServerSocket::~ServerSocket() {
-  if (*this != -1) {
-    close(*this);
+  if (this->descriptor_ != -1) {
+    close(this->descriptor_);
   }
 }
-
-ServerSocket::operator int() const { return this->descriptor_; }
 
 const SocketAddress &ServerSocket::Address() const { return this->address_; }
 
 void ServerSocket::Listen(
     const std::function<void(std::unique_ptr<Socket>)> &handler) const {
-  assert(*this != -1);
+  assert(this->descriptor_ != -1);
 
   for (;;) {
     sockaddr_storage from;
     socklen_t from_len = sizeof(from);
-    int descriptor = accept(*this, (sockaddr *)&from, &from_len);
+    int descriptor = accept(this->descriptor_, (sockaddr *)&from, &from_len);
     if (descriptor == -1) {
       continue;
     }

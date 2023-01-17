@@ -28,8 +28,6 @@ class Socket {
 
   ~Socket();
 
-  [[nodiscard]] operator int() const;
-
   [[nodiscard]] const SocketAddress &Address() const;
 
   [[nodiscard]] Result<i64> Send(const std::vector<std::byte> &data) const;
