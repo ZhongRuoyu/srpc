@@ -107,7 +107,7 @@ Result<i64> Socket::Send(const std::vector<std::byte> &data) const {
   assert(this->descriptor_ != -1);
 
   {
-    auto header = Serialize(i64(std::ssize(data)));
+    auto header = Marshal<i64>{}(std::ssize(data));
     i64 res = send(this->descriptor_, header.data(), header.size(), 0);
     if (res == -1) {
       // NOLINTNEXTLINE(concurrency-mt-unsafe)
@@ -140,7 +140,7 @@ Result<std::vector<std::byte>> Socket::Receive() const {
       // NOLINTNEXTLINE(concurrency-mt-unsafe)
       return Result<std::vector<std::byte>>::Err(std::strerror(errno));
     }
-    data_size = Deserialize<i64>(header);
+    data_size = Unmarshal<i64>{}(header);
   }
 
   std::vector<std::byte> data(data_size);

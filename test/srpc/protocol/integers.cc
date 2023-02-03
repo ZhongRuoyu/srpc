@@ -26,7 +26,7 @@ static constexpr std::array<std::byte, sizeof...(Ts)> MakeBytes(Ts... bytes) {
   return std::array<std::byte, sizeof...(Ts)>{std::byte(bytes)...};
 };
 
-TEST(Protocol, SerializeSignedInts) {
+TEST(Protocol, MarshalSignedInts) {
   auto assert_eq = [](auto expected, auto actual) {
     ASSERT_EQ(expected.size(), actual.size());
     for (std::size_t i = 0; i < expected.size(); ++i) {
@@ -34,13 +34,13 @@ TEST(Protocol, SerializeSignedInts) {
     }
   };
   assert_eq(MakeBytes(0xef, 0xbe, 0xad, 0xde, 0xef, 0xbe, 0xad, 0xde),
-            Serialize(i64(0xdeadbeefdeadbeef)));
-  assert_eq(MakeBytes(0xef, 0xbe, 0xad, 0xde), Serialize(i32(0xdeadbeef)));
-  assert_eq(MakeBytes(0xef, 0xbe), Serialize(i16(0xbeef)));
-  assert_eq(MakeBytes(0xbe), Serialize(i8(0xbe)));
+            Marshal<i64>{}(i64(0xdeadbeefdeadbeef)));
+  assert_eq(MakeBytes(0xef, 0xbe, 0xad, 0xde), Marshal<i32>{}(i32(0xdeadbeef)));
+  assert_eq(MakeBytes(0xef, 0xbe), Marshal<i16>{}(i16(0xbeef)));
+  assert_eq(MakeBytes(0xbe), Marshal<i8>{}(i8(0xbe)));
 }
 
-TEST(Protocol, SerializeUnsignedInts) {
+TEST(Protocol, MarshalUnsignedInts) {
   auto assert_eq = [](auto expected, auto actual) {
     ASSERT_EQ(expected.size(), actual.size());
     for (std::size_t i = 0; i < expected.size(); ++i) {
@@ -48,13 +48,13 @@ TEST(Protocol, SerializeUnsignedInts) {
     }
   };
   assert_eq(MakeBytes(0xef, 0xbe, 0xad, 0xde, 0xef, 0xbe, 0xad, 0xde),
-            Serialize(u64(0xdeadbeefdeadbeef)));
-  assert_eq(MakeBytes(0xef, 0xbe, 0xad, 0xde), Serialize(u32(0xdeadbeef)));
-  assert_eq(MakeBytes(0xef, 0xbe), Serialize(u16(0xbeef)));
-  assert_eq(MakeBytes(0xbe), Serialize(u8(0xbe)));
+            Marshal<u64>{}(u64(0xdeadbeefdeadbeef)));
+  assert_eq(MakeBytes(0xef, 0xbe, 0xad, 0xde), Marshal<u32>{}(u32(0xdeadbeef)));
+  assert_eq(MakeBytes(0xef, 0xbe), Marshal<u16>{}(u16(0xbeef)));
+  assert_eq(MakeBytes(0xbe), Marshal<u8>{}(u8(0xbe)));
 }
 
-TEST(Protocol, DeserializeSignedInts) {
+TEST(Protocol, UnmarshalSignedInts) {
   auto assert_eq = [](auto expected, auto actual) {
     ASSERT_EQ(expected.size(), actual.size());
     for (std::size_t i = 0; i < expected.size(); ++i) {
@@ -62,15 +62,15 @@ TEST(Protocol, DeserializeSignedInts) {
     }
   };
   ASSERT_EQ(i64(0xdeadbeefdeadbeef),
-            Deserialize<i64>(
+            Unmarshal<i64>{}(
                 MakeBytes(0xef, 0xbe, 0xad, 0xde, 0xef, 0xbe, 0xad, 0xde)));
   ASSERT_EQ(i32(0xdeadbeef),
-            Deserialize<i32>(MakeBytes(0xef, 0xbe, 0xad, 0xde)));
-  ASSERT_EQ(i16(0xbeef), Deserialize<i16>(MakeBytes(0xef, 0xbe)));
-  ASSERT_EQ(i8(0xbe), Deserialize<i8>(MakeBytes(0xbe)));
+            Unmarshal<i32>{}(MakeBytes(0xef, 0xbe, 0xad, 0xde)));
+  ASSERT_EQ(i16(0xbeef), Unmarshal<i16>{}(MakeBytes(0xef, 0xbe)));
+  ASSERT_EQ(i8(0xbe), Unmarshal<i8>{}(MakeBytes(0xbe)));
 }
 
-TEST(Protocol, DeserializeUnsignedInts) {
+TEST(Protocol, UnmarshalUnsignedInts) {
   auto assert_eq = [](auto expected, auto actual) {
     ASSERT_EQ(expected.size(), actual.size());
     for (std::size_t i = 0; i < expected.size(); ++i) {
@@ -78,10 +78,10 @@ TEST(Protocol, DeserializeUnsignedInts) {
     }
   };
   ASSERT_EQ(u64(0xdeadbeefdeadbeef),
-            Deserialize<u64>(
+            Unmarshal<u64>{}(
                 MakeBytes(0xef, 0xbe, 0xad, 0xde, 0xef, 0xbe, 0xad, 0xde)));
   ASSERT_EQ(u32(0xdeadbeef),
-            Deserialize<u32>(MakeBytes(0xef, 0xbe, 0xad, 0xde)));
-  ASSERT_EQ(u16(0xbeef), Deserialize<u16>(MakeBytes(0xef, 0xbe)));
-  ASSERT_EQ(u8(0xbe), Deserialize<u8>(MakeBytes(0xbe)));
+            Unmarshal<u32>{}(MakeBytes(0xef, 0xbe, 0xad, 0xde)));
+  ASSERT_EQ(u16(0xbeef), Unmarshal<u16>{}(MakeBytes(0xef, 0xbe)));
+  ASSERT_EQ(u8(0xbe), Unmarshal<u8>{}(MakeBytes(0xbe)));
 }

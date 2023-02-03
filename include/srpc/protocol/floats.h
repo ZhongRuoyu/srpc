@@ -6,6 +6,7 @@
 #include <limits>
 
 #include "srpc/protocol/integers.h"
+#include "srpc/protocol/serialization.h"
 
 namespace srpc {
 
@@ -20,48 +21,34 @@ using f64 = double;
 // NOLINTEND(readability-identifier-naming)
 
 template <>
-[[nodiscard]] inline constexpr std::array<std::byte, sizeof(f32)> Serialize(
-    f32 val) {
-  union {
-    f32 f;
-    i32 i;
-  } u;
-  u.f = val;
-  return Serialize(u.i);
-}
+struct Marshal<f32> {
+  [[nodiscard]] std::array<std::byte, sizeof(f32)> operator()(f32 val) const {
+    return Marshal<i32>{}(*reinterpret_cast<i32 *>(&val));
+  }
+};
 
 template <>
-[[nodiscard]] inline constexpr std::array<std::byte, sizeof(f64)> Serialize(
-    f64 val) {
-  union {
-    f64 f;
-    i64 i;
-  } u;
-  u.f = val;
-  return Serialize(u.i);
-}
+struct Marshal<f64> {
+  [[nodiscard]] std::array<std::byte, sizeof(f64)> operator()(f64 val) const {
+    return Marshal<i64>{}(*reinterpret_cast<i64 *>(&val));
+  }
+};
 
 template <>
-[[nodiscard]] inline constexpr f32 Deserialize(
-    std::array<std::byte, sizeof(f32)> data) {
-  union {
-    f32 f;
-    i32 i;
-  } u;
-  u.i = Deserialize<i32>(data);
-  return u.f;
-}
+struct Unmarshal<f32> {
+  [[nodiscard]] f32 operator()(std::array<std::byte, sizeof(f32)> data) const {
+    i32 val = Unmarshal<i32>{}(data);
+    return *reinterpret_cast<f32 *>(&val);
+  }
+};
 
 template <>
-[[nodiscard]] inline constexpr f64 Deserialize(
-    std::array<std::byte, sizeof(f64)> data) {
-  union {
-    f64 f;
-    i64 i;
-  } u;
-  u.i = Deserialize<i64>(data);
-  return u.f;
-}
+struct Unmarshal<f64> {
+  [[nodiscard]] f64 operator()(std::array<std::byte, sizeof(f64)> data) const {
+    i64 val = Unmarshal<i64>{}(data);
+    return *reinterpret_cast<f64 *>(&val);
+  }
+};
 
 }  // namespace srpc
 

@@ -9,12 +9,12 @@ using namespace srpc;
 
 TEST(Protocol, SerializeAndDeserializeFloats) {
   auto check = [](auto val) {
-    auto tmp = Serialize(val);
+    auto tmp = Marshal<decltype(val)>{}(val);
     ASSERT_EQ(sizeof(val), tmp.size());
     if (std::isnan(val)) {
-      ASSERT_TRUE(std::isnan(Deserialize<decltype(val)>(tmp)));
+      ASSERT_TRUE(std::isnan(Unmarshal<decltype(val)>{}(tmp)));
     } else {
-      ASSERT_FLOAT_EQ(val, Deserialize<decltype(val)>(tmp));
+      ASSERT_FLOAT_EQ(val, Unmarshal<decltype(val)>{}(tmp));
     }
   };
   check(3.141593F);

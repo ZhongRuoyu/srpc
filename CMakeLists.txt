@@ -14,7 +14,6 @@ set(SRPC_HDRS
   include/srpc/protocol/floats.h
   include/srpc/protocol/integers.h
   include/srpc/protocol/strings.h
-  include/srpc/utils/memory.h
   include/srpc/utils/result.h
 )
 set(SRPC_SRCS

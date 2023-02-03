@@ -6,15 +6,20 @@
 #include <string>
 #include <vector>
 
+#include "srpc/protocol/serialization.h"
+
 namespace srpc {
 
-[[nodiscard]] std::vector<std::byte> Serialize(const std::string &str);
+template <>
+struct Marshal<std::string> {
+  [[nodiscard]] std::vector<std::byte> operator()(const std::string &str) const;
+};
 
-[[nodiscard]] std::vector<std::byte> Serialize(const char *str);
-[[nodiscard]] std::vector<std::byte> Serialize(char *str);
-
-[[nodiscard]] std::optional<std::string> Deserialize(
-    const std::vector<std::byte> &data);
+template <>
+struct Unmarshal<std::string> {
+  [[nodiscard]] std::optional<std::string> operator()(
+      const std::vector<std::byte> &data) const;
+};
 
 }  // namespace srpc
 

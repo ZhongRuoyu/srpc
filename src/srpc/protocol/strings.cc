@@ -9,12 +9,14 @@
 #include <vector>
 
 #include "srpc/protocol/integers.h"
+#include "srpc/protocol/serialization.h"
 
 namespace srpc {
 
-std::vector<std::byte> Serialize(const std::string &str) {
+std::vector<std::byte> Marshal<std::string>::operator()(
+    const std::string &str) const {
   std::vector<std::byte> data;
-  auto len = Serialize(i64(std::ssize(str)));
+  auto len = Marshal<i64>{}(std::ssize(str));
   data.reserve(len.size() + str.size());
   std::copy(len.begin(), len.end(), std::back_inserter(data));
   std::transform(str.begin(), str.end(), std::back_inserter(data),
@@ -22,22 +24,15 @@ std::vector<std::byte> Serialize(const std::string &str) {
   return data;
 }
 
-std::vector<std::byte> Serialize(const char *str) {
-  return Serialize(std::string(str));
-}
-
-std::vector<std::byte> Serialize(char *str) {
-  return Serialize(std::string(str));
-}
-
-std::optional<std::string> Deserialize(const std::vector<std::byte> &data) {
+std::optional<std::string> Unmarshal<std::string>::operator()(
+    const std::vector<std::byte> &data) const {
   if (data.size() < sizeof(i64)) {
     return {};
   }
 
   std::array<std::byte, sizeof(i64)> len_arr;
   std::copy(data.begin(), data.begin() + sizeof(i64), len_arr.begin());
-  auto len = Deserialize<i64>(len_arr);
+  auto len = Unmarshal<i64>{}(len_arr);
   if (data.size() != sizeof(i64) + len) {
     return {};
   }
