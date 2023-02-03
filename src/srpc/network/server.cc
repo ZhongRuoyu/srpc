@@ -8,7 +8,7 @@
 #include <vector>
 
 #include "srpc/network/server_socket.h"
-#include "srpc/protocol/integers.h"
+#include "srpc/types/integers.h"
 #include "srpc/utils/result.h"
 
 namespace srpc {

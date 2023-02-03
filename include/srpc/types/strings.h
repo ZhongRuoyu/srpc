@@ -6,7 +6,7 @@
 #include <string>
 #include <vector>
 
-#include "srpc/protocol/serialization.h"
+#include "srpc/types/serialization.h"
 
 namespace srpc {
 

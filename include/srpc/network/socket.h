@@ -7,7 +7,7 @@
 #include <vector>
 
 #include "srpc/network/tcp_ip.h"
-#include "srpc/protocol/integers.h"
+#include "srpc/types/integers.h"
 #include "srpc/utils/result.h"
 
 namespace srpc {

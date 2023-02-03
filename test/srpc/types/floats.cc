@@ -1,4 +1,4 @@
-#include "srpc/protocol/floats.h"
+#include "srpc/types/floats.h"
 
 #include <cmath>
 #include <limits>

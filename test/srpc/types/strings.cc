@@ -1,4 +1,4 @@
-#include "srpc/protocol/strings.h"
+#include "srpc/types/strings.h"
 
 #include <cstddef>
 #include <cstring>
@@ -7,7 +7,7 @@
 
 #include <gtest/gtest.h>
 
-#include "srpc/protocol/integers.h"
+#include "srpc/types/integers.h"
 
 using namespace srpc;
 

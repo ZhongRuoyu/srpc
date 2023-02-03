@@ -5,7 +5,7 @@
 
 #include <gtest/gtest.h>
 
-#include "srpc/protocol/integers.h"
+#include "srpc/types/integers.h"
 
 using namespace srpc;
 

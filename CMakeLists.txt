@@ -11,9 +11,9 @@ set(SRPC_HDRS
   include/srpc/network/server_socket.h
   include/srpc/network/socket.h
   include/srpc/network/tcp_ip.h
-  include/srpc/protocol/floats.h
-  include/srpc/protocol/integers.h
-  include/srpc/protocol/strings.h
+  include/srpc/types/floats.h
+  include/srpc/types/integers.h
+  include/srpc/types/strings.h
   include/srpc/utils/result.h
 )
 set(SRPC_SRCS
@@ -21,7 +21,7 @@ set(SRPC_SRCS
   src/srpc/network/server.cc
   src/srpc/network/server_socket.cc
   src/srpc/network/socket.cc
-  src/srpc/protocol/strings.cc
+  src/srpc/types/strings.cc
 )
 add_library(srpc SHARED)
 target_include_directories(srpc PUBLIC include)

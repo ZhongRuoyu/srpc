@@ -8,7 +8,7 @@
 #include <cstdint>
 #include <type_traits>
 
-#include "srpc/protocol/serialization.h"
+#include "srpc/types/serialization.h"
 
 namespace srpc {
 

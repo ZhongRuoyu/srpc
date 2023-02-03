@@ -5,8 +5,8 @@
 #include <cstddef>
 #include <limits>
 
-#include "srpc/protocol/integers.h"
-#include "srpc/protocol/serialization.h"
+#include "srpc/types/integers.h"
+#include "srpc/types/serialization.h"
 
 namespace srpc {
 

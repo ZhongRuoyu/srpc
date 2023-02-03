@@ -1,4 +1,4 @@
-#include "srpc/protocol/integers.h"
+#include "srpc/types/integers.h"
 
 #include <array>
 #include <cstddef>

@@ -3,7 +3,7 @@
 
 #include <string>
 
-#include "srpc/protocol/integers.h"
+#include "srpc/types/integers.h"
 
 namespace srpc {
 
