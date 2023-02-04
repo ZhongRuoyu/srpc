@@ -142,7 +142,7 @@ void ServerSocket::Listen(
   }
 }
 
-ServerSocket::ServerSocket(struct SocketAddress address, int descriptor)
+ServerSocket::ServerSocket(SocketAddress address, int descriptor)
     : address_(std::move(address)), descriptor_(descriptor) {}
 
 }  // namespace srpc

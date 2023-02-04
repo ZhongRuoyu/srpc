@@ -30,9 +30,9 @@ class ServerSocket {
       const std::function<void(std::unique_ptr<Socket>)> &handler) const;
 
  private:
-  ServerSocket(struct SocketAddress address, int descriptor);
+  ServerSocket(SocketAddress address, int descriptor);
 
-  struct SocketAddress address_;
+  SocketAddress address_;
   int descriptor_ = -1;
 };
 
