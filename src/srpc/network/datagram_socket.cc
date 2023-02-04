@@ -1,4 +1,4 @@
-#include "srpc/network/socket.h"
+#include "srpc/network/datagram_socket.h"
 
 #include <arpa/inet.h>
 #include <netdb.h>
@@ -15,7 +15,6 @@
 #include <utility>
 #include <vector>
 
-#include "srpc/network/message.h"
 #include "srpc/network/tcp_ip.h"
 #include "srpc/types/integers.h"
 #include "srpc/utils/result.h"
@@ -50,18 +49,18 @@ static SocketAddress GetSocketAddress(const sockaddr *addr) {
   assert(false);
 }
 
-Result<std::unique_ptr<Socket>> Socket::New(const std::string &address,
-                                            u16 port) {
+Result<std::unique_ptr<DatagramSocket>> DatagramSocket::New(
+    const std::string &address, u16 port) {
   int socktype = 0;
   addrinfo hints{
       .ai_family = AF_UNSPEC,
-      .ai_socktype = SOCK_STREAM,
+      .ai_socktype = SOCK_DGRAM,
   };
   addrinfo *head = nullptr;
   if (int err = getaddrinfo(address.c_str(), std::to_string(port).c_str(),
                             &hints, &head);
       err != 0) {
-    return Result<std::unique_ptr<Socket>>::Err(gai_strerror(err));
+    return Result<std::unique_ptr<DatagramSocket>>::Err(gai_strerror(err));
   }
 
   for (addrinfo *p = head; p != nullptr; p = p->ai_next) {
@@ -76,39 +75,38 @@ Result<std::unique_ptr<Socket>> Socket::New(const std::string &address,
 
     auto addr = GetSocketAddress(p->ai_addr);
     freeaddrinfo(head);
-    return Result<std::unique_ptr<Socket>>::Ok(
-        std::unique_ptr<Socket>(new Socket(std::move(addr), descriptor)));
+    return Result<std::unique_ptr<DatagramSocket>>::Ok(
+        std::unique_ptr<DatagramSocket>(
+            new DatagramSocket(std::move(addr), descriptor)));
   }
 
   freeaddrinfo(head);
   // NOLINTNEXTLINE(concurrency-mt-unsafe)
-  return Result<std::unique_ptr<Socket>>::Err(std::strerror(errno));
+  return Result<std::unique_ptr<DatagramSocket>>::Err(std::strerror(errno));
 }
 
-Socket::Socket(Socket &&other) noexcept
+DatagramSocket::DatagramSocket(DatagramSocket &&other) noexcept
     : address_(std::move(other.address_)), descriptor_(other.descriptor_) {
   other.descriptor_ = -1;
 }
 
-Socket &Socket::operator=(Socket &&other) noexcept {
+DatagramSocket &DatagramSocket::operator=(DatagramSocket &&other) noexcept {
   this->address_ = std::move(other.address_);
   this->descriptor_ = other.descriptor_;
   other.descriptor_ = -1;
   return *this;
 }
 
-Socket::~Socket() {
+DatagramSocket::~DatagramSocket() {
   if (this->descriptor_ != -1) {
     close(this->descriptor_);
   }
 }
 
-const SocketAddress &Socket::Address() const { return this->address_; }
+const SocketAddress &DatagramSocket::Address() const { return this->address_; }
 
-Result<i64> Socket::Send(const std::vector<std::byte> &data) const {
+Result<i64> DatagramSocket::Send(const std::vector<std::byte> &msg) const {
   assert(this->descriptor_ != -1);
-
-  auto msg = MakeMessage(data);
 
   i64 data_sent = 0;
   while (data_sent < msg.size()) {
@@ -124,36 +122,20 @@ Result<i64> Socket::Send(const std::vector<std::byte> &data) const {
   return Result<i64>::Ok(data_sent);
 }
 
-Result<std::vector<std::byte>> Socket::Receive() const {
+Result<std::vector<std::byte>> DatagramSocket::Receive() const {
   assert(this->descriptor_ != -1);
 
-  i64 msg_size = 0;
-  {
-    std::array<std::byte, sizeof(i64)> header;
-    i64 res = recv(this->descriptor_, header.data(), header.size(), 0);
-    if (res == -1) {
-      // NOLINTNEXTLINE(concurrency-mt-unsafe)
-      return Result<std::vector<std::byte>>::Err(std::strerror(errno));
-    }
-    msg_size = Unmarshal<i64>{}(header);
+  std::vector<std::byte> msg(65536);
+  i64 res = recv(this->descriptor_, msg.data(), msg.size(), 0);
+  if (res == -1) {
+    // NOLINTNEXTLINE(concurrency-mt-unsafe)
+    return Result<std::vector<std::byte>>::Err(std::strerror(errno));
   }
-
-  std::vector<std::byte> msg(msg_size);
-  i64 data_received = 0;
-  while (data_received < msg.size()) {
-    i64 res = recv(this->descriptor_, msg.data() + data_received,
-                   msg.size() - data_received, 0);
-    if (res == -1) {
-      // NOLINTNEXTLINE(concurrency-mt-unsafe)
-      return Result<std::vector<std::byte>>::Err(std::strerror(errno));
-    }
-    data_received += res;
-  }
-
+  msg.resize(res);
   return Result<std::vector<std::byte>>::Ok(std::move(msg));
 }
 
-Socket::Socket(SocketAddress address, int descriptor)
+DatagramSocket::DatagramSocket(SocketAddress address, int descriptor)
     : address_(std::move(address)), descriptor_(descriptor) {}
 
 }  // namespace srpc

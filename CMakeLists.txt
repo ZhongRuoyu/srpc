@@ -7,7 +7,12 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 set(SRPC_HDRS
   include/srpc/network/client.h
+  include/srpc/network/datagram_client.h
+  include/srpc/network/datagram_server.h
+  include/srpc/network/datagram_socket.h
+  include/srpc/network/message.h
   include/srpc/network/server.h
+  include/srpc/network/server_datagram_socket.h
   include/srpc/network/server_socket.h
   include/srpc/network/socket.h
   include/srpc/network/tcp_ip.h
@@ -18,7 +23,12 @@ set(SRPC_HDRS
 )
 set(SRPC_SRCS
   src/srpc/network/client.cc
+  src/srpc/network/datagram_client.cc
+  src/srpc/network/datagram_server.cc
+  src/srpc/network/datagram_socket.cc
+  src/srpc/network/message.cc
   src/srpc/network/server.cc
+  src/srpc/network/server_datagram_socket.cc
   src/srpc/network/server_socket.cc
   src/srpc/network/socket.cc
   src/srpc/types/strings.cc
