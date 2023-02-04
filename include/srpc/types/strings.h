@@ -1,5 +1,5 @@
-#ifndef SRPC_PROTOCOL_STRINGS_H_
-#define SRPC_PROTOCOL_STRINGS_H_
+#ifndef SRPC_TYPES_STRINGS_H_
+#define SRPC_TYPES_STRINGS_H_
 
 #include <cstddef>
 #include <optional>
@@ -23,4 +23,4 @@ struct Unmarshal<std::string> {
 
 }  // namespace srpc
 
-#endif  // SRPC_PROTOCOL_STRINGS_H_
+#endif  // SRPC_TYPES_STRINGS_H_

@@ -1,5 +1,5 @@
-#ifndef SRPC_PROTOCOL_FLOATS_H_
-#define SRPC_PROTOCOL_FLOATS_H_
+#ifndef SRPC_TYPES_FLOATS_H_
+#define SRPC_TYPES_FLOATS_H_
 
 #include <array>
 #include <cstddef>
@@ -52,4 +52,4 @@ struct Unmarshal<f64> {
 
 }  // namespace srpc
 
-#endif  // SRPC_PROTOCOL_FLOATS_H_
+#endif  // SRPC_TYPES_FLOATS_H_

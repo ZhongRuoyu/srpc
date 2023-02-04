@@ -1,5 +1,5 @@
-#ifndef SRPC_PROTOCOL_INTEGERS_H_
-#define SRPC_PROTOCOL_INTEGERS_H_
+#ifndef SRPC_TYPES_INTEGERS_H_
+#define SRPC_TYPES_INTEGERS_H_
 
 #include <array>
 #include <bit>
@@ -270,4 +270,4 @@ struct Unmarshal<u64> {
 
 }  // namespace srpc
 
-#endif  // SRPC_PROTOCOL_INTEGERS_H_
+#endif  // SRPC_TYPES_INTEGERS_H_

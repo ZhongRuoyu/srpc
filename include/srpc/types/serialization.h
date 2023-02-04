@@ -1,5 +1,5 @@
-#ifndef SRPC_PROTOCOL_SERIALIZATION_H_
-#define SRPC_PROTOCOL_SERIALIZATION_H_
+#ifndef SRPC_TYPES_SERIALIZATION_H_
+#define SRPC_TYPES_SERIALIZATION_H_
 
 namespace srpc {
 
@@ -11,4 +11,4 @@ struct Unmarshal;
 
 }  // namespace srpc
 
-#endif  // SRPC_PROTOCOL_SERIALIZATION_H_
+#endif  // SRPC_TYPES_SERIALIZATION_H_

@@ -18,6 +18,7 @@ set(SRPC_HDRS
   include/srpc/network/tcp_ip.h
   include/srpc/types/floats.h
   include/srpc/types/integers.h
+  include/srpc/types/serialization.h
   include/srpc/types/strings.h
   include/srpc/utils/result.h
 )
