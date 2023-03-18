@@ -26,7 +26,10 @@ Result<std::unique_ptr<DatagramClient>> DatagramClient::New(
 
 Result<std::vector<std::byte>> DatagramClient::SendAndReceive(
     const std::vector<std::byte> &msg) const {
-  std::ignore = this->socket_->Send(msg);
+  auto send_res = this->socket_->Send(msg);
+  if (!send_res.OK()) {
+    return send_res.Error();
+  }
   auto res = this->socket_->Receive();
   return res;
 }
