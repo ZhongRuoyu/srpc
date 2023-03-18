@@ -60,7 +60,7 @@ Result<std::unique_ptr<DatagramSocket>> DatagramSocket::New(
   if (int err = getaddrinfo(address.c_str(), std::to_string(port).c_str(),
                             &hints, &head);
       err != 0) {
-    return Result<std::unique_ptr<DatagramSocket>>::Err(gai_strerror(err));
+    return std::string{gai_strerror(err)};
   }
 
   for (addrinfo *p = head; p != nullptr; p = p->ai_next) {
@@ -75,14 +75,13 @@ Result<std::unique_ptr<DatagramSocket>> DatagramSocket::New(
 
     auto addr = GetSocketAddress(p->ai_addr);
     freeaddrinfo(head);
-    return Result<std::unique_ptr<DatagramSocket>>::Ok(
-        std::unique_ptr<DatagramSocket>(
-            new DatagramSocket(std::move(addr), descriptor)));
+    return std::unique_ptr<DatagramSocket>(
+        new DatagramSocket(std::move(addr), descriptor));
   }
 
   freeaddrinfo(head);
   // NOLINTNEXTLINE(concurrency-mt-unsafe)
-  return Result<std::unique_ptr<DatagramSocket>>::Err(std::strerror(errno));
+  return std::string{std::strerror(errno)};
 }
 
 DatagramSocket::DatagramSocket(DatagramSocket &&other) noexcept
@@ -109,7 +108,7 @@ Result<i64> DatagramSocket::Send(const std::vector<std::byte> &msg) const {
   assert(this->descriptor_ != -1);
 
   if (msg.size() > 65536) {
-    return Result<i64>::Err("Message is too large");
+    return std::string{"Message is too large"};
   }
 
   constexpr int retry_times = 10;
@@ -122,7 +121,7 @@ Result<i64> DatagramSocket::Send(const std::vector<std::byte> &msg) const {
     if (setsockopt(this->descriptor_, SOL_SOCKET, SO_SNDTIMEO, &tv,
                    sizeof(tv)) == -1) {
       // NOLINTNEXTLINE(concurrency-mt-unsafe)
-      return Result<i64>::Err(std::strerror(errno));
+      return std::string{std::strerror(errno)};
     }
 
     i64 res = send(this->descriptor_, msg.data(), msg.size(), 0);
@@ -133,18 +132,15 @@ Result<i64> DatagramSocket::Send(const std::vector<std::byte> &msg) const {
         continue;
       }
       // NOLINTNEXTLINE(concurrency-mt-unsafe)
-      return Result<i64>::Err(std::strerror(errno));
+      return std::string{std::strerror(errno)};
     }
 
-    Result<i64> result = Result<i64>::Ok(res);
-    if (i > 0) {
-      result.Error() = "Send succeeded after " + std::to_string(i) + " retries";
-    }
+    Result<i64> result = res;
     return result;
   }
 
-  return Result<i64>::Err("Send failed after " + std::to_string(retry_times) +
-                          " retries");
+  return std::string{"Send failed after " + std::to_string(retry_times) +
+                     " retries"};
 }
 
 Result<std::vector<std::byte>> DatagramSocket::Receive() const {
@@ -160,7 +156,7 @@ Result<std::vector<std::byte>> DatagramSocket::Receive() const {
     if (setsockopt(this->descriptor_, SOL_SOCKET, SO_RCVTIMEO, &tv,
                    sizeof(tv)) == -1) {
       // NOLINTNEXTLINE(concurrency-mt-unsafe)
-      return Result<std::vector<std::byte>>::Err(std::strerror(errno));
+      return std::string{std::strerror(errno)};
     }
 
     std::vector<std::byte> msg(65536);
@@ -172,21 +168,16 @@ Result<std::vector<std::byte>> DatagramSocket::Receive() const {
         continue;
       }
       // NOLINTNEXTLINE(concurrency-mt-unsafe)
-      return Result<std::vector<std::byte>>::Err(std::strerror(errno));
+      return std::string{std::strerror(errno)};
     }
 
     msg.resize(res);
-    Result<std::vector<std::byte>> result =
-        Result<std::vector<std::byte>>::Ok(std::move(msg));
-    if (i > 0) {
-      result.Error() =
-          "Receive succeeded after " + std::to_string(i) + " retries";
-    }
+    Result<std::vector<std::byte>> result = std::move(msg);
     return result;
   }
 
-  return Result<std::vector<std::byte>>::Err(
-      "Receive failed after " + std::to_string(retry_times) + " retries");
+  return std::string{"Receive failed after " + std::to_string(retry_times) +
+                     " retries"};
 }
 
 DatagramSocket::DatagramSocket(SocketAddress address, int descriptor)

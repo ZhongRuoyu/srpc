@@ -63,8 +63,7 @@ Result<std::unique_ptr<ServerDatagramSocket>> ServerDatagramSocket::New(
   if (int err =
           getaddrinfo(nullptr, std::to_string(port).c_str(), &hints, &head);
       err != 0) {
-    return Result<std::unique_ptr<ServerDatagramSocket>>::Err(
-        gai_strerror(err));
+    return std::string{gai_strerror(err)};
   }
 
   for (addrinfo *p = head; p != nullptr; p = p->ai_next) {
@@ -80,15 +79,13 @@ Result<std::unique_ptr<ServerDatagramSocket>> ServerDatagramSocket::New(
     auto addr = GetSocketAddress(p->ai_addr);
     freeaddrinfo(head);
 
-    return Result<std::unique_ptr<ServerDatagramSocket>>::Ok(
-        std::unique_ptr<ServerDatagramSocket>(
-            new ServerDatagramSocket(std::move(addr), descriptor)));
+    return std::unique_ptr<ServerDatagramSocket>(
+        new ServerDatagramSocket(std::move(addr), descriptor));
   }
 
   freeaddrinfo(head);
-  return Result<std::unique_ptr<ServerDatagramSocket>>::Err(
-      // NOLINTNEXTLINE(concurrency-mt-unsafe)
-      std::strerror(errno));
+  // NOLINTNEXTLINE(concurrency-mt-unsafe)
+  return std::string{std::strerror(errno)};
 }
 
 ServerDatagramSocket::ServerDatagramSocket(

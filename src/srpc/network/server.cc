@@ -17,12 +17,11 @@ namespace srpc {
 Result<std::unique_ptr<Server>> Server::New(u16 port) {
   auto server_socket_res = ServerSocket::New(port);
   if (!server_socket_res.OK()) {
-    return Result<std::unique_ptr<Server>>::Err(
-        std::move(server_socket_res.Error()));
+    return std::move(server_socket_res.Error());
   }
   auto server =
       std::unique_ptr<Server>(new Server(std::move(server_socket_res.Value())));
-  return Result<std::unique_ptr<Server>>::Ok(std::move(server));
+  return std::move(server);
 }
 
 void Server::Listen(const std::function<std::vector<std::byte>(

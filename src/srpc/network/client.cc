@@ -17,11 +17,11 @@ Result<std::unique_ptr<Client>> Client::New(const std::string &address,
                                             u16 port) {
   auto socket_res = Socket::New(address, port);
   if (!socket_res.OK()) {
-    return Result<std::unique_ptr<Client>>::Err(std::move(socket_res.Error()));
+    return std::move(socket_res.Error());
   }
   auto client =
       std::unique_ptr<Client>(new Client(std::move(socket_res.Value())));
-  return Result<std::unique_ptr<Client>>::Ok(std::move(client));
+  return std::move(client);
 }
 
 Result<std::vector<std::byte>> Client::SendAndReceive(

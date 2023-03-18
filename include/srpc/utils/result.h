@@ -15,6 +15,12 @@ class Result {
   Result(const Result &) = default;
   Result(Result &&) noexcept = default;
 
+  Result(const T &value) : value_(value), error_() {}
+  Result(T &&value) : value_(std::move(value)), error_() {}
+
+  Result(const E &error) : value_(), error_(error) {}
+  Result(E &&error) noexcept : value_(), error_(std::move(error)) {}
+
   Result &operator=(const Result &) = default;
   Result &operator=(Result &&) noexcept = default;
 
@@ -55,12 +61,6 @@ class Result {
   [[nodiscard]] constexpr const E &&Error() const && {
     assert(!this->OK());
     return *(this->error_);
-  }
-
-  static Result<T, E> Ok(T value) { return Result<T, E>(std::move(value), {}); }
-
-  static Result<T, E> Err(E error) {
-    return Result<T, E>({}, std::move(error));
   }
 
  private:

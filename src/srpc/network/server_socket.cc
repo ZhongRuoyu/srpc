@@ -61,7 +61,7 @@ Result<std::unique_ptr<ServerSocket>> ServerSocket::New(u16 port) {
   if (int err =
           getaddrinfo(nullptr, std::to_string(port).c_str(), &hints, &head);
       err != 0) {
-    return Result<std::unique_ptr<ServerSocket>>::Err(gai_strerror(err));
+    return std::string{gai_strerror(err)};
   }
 
   for (addrinfo *p = head; p != nullptr; p = p->ai_next) {
@@ -76,7 +76,7 @@ Result<std::unique_ptr<ServerSocket>> ServerSocket::New(u16 port) {
         close(descriptor);
         freeaddrinfo(head);
         // NOLINTNEXTLINE(concurrency-mt-unsafe)
-        return Result<std::unique_ptr<ServerSocket>>::Err(std::strerror(errno));
+        return std::string{std::strerror(errno)};
       }
     }
     if (bind(descriptor, p->ai_addr, p->ai_addrlen) == -1) {
@@ -89,17 +89,16 @@ Result<std::unique_ptr<ServerSocket>> ServerSocket::New(u16 port) {
     if (listen(descriptor, SOMAXCONN) == -1) {
       close(descriptor);
       // NOLINTNEXTLINE(concurrency-mt-unsafe)
-      return Result<std::unique_ptr<ServerSocket>>::Err(std::strerror(errno));
+      return std::string{std::strerror(errno)};
     }
 
-    return Result<std::unique_ptr<ServerSocket>>::Ok(
-        std::unique_ptr<ServerSocket>(
-            new ServerSocket(std::move(addr), descriptor)));
+    return std::unique_ptr<ServerSocket>(
+        new ServerSocket(std::move(addr), descriptor));
   }
 
   freeaddrinfo(head);
   // NOLINTNEXTLINE(concurrency-mt-unsafe)
-  return Result<std::unique_ptr<ServerSocket>>::Err(std::strerror(errno));
+  return std::string{std::strerror(errno)};
 }
 
 ServerSocket::ServerSocket(ServerSocket &&other) noexcept

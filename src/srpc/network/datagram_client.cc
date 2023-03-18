@@ -17,12 +17,11 @@ Result<std::unique_ptr<DatagramClient>> DatagramClient::New(
     const std::string &address, u16 port) {
   auto socket_res = DatagramSocket::New(address, port);
   if (!socket_res.OK()) {
-    return Result<std::unique_ptr<DatagramClient>>::Err(
-        std::move(socket_res.Error()));
+    return std::move(socket_res.Error());
   }
   auto client = std::unique_ptr<DatagramClient>(
       new DatagramClient(std::move(socket_res.Value())));
-  return Result<std::unique_ptr<DatagramClient>>::Ok(std::move(client));
+  return std::move(client);
 }
 
 Result<std::vector<std::byte>> DatagramClient::SendAndReceive(

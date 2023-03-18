@@ -61,7 +61,7 @@ Result<std::unique_ptr<Socket>> Socket::New(const std::string &address,
   if (int err = getaddrinfo(address.c_str(), std::to_string(port).c_str(),
                             &hints, &head);
       err != 0) {
-    return Result<std::unique_ptr<Socket>>::Err(gai_strerror(err));
+    return std::string{gai_strerror(err)};
   }
 
   for (addrinfo *p = head; p != nullptr; p = p->ai_next) {
@@ -76,13 +76,12 @@ Result<std::unique_ptr<Socket>> Socket::New(const std::string &address,
 
     auto addr = GetSocketAddress(p->ai_addr);
     freeaddrinfo(head);
-    return Result<std::unique_ptr<Socket>>::Ok(
-        std::unique_ptr<Socket>(new Socket(std::move(addr), descriptor)));
+    return std::unique_ptr<Socket>(new Socket(std::move(addr), descriptor));
   }
 
   freeaddrinfo(head);
   // NOLINTNEXTLINE(concurrency-mt-unsafe)
-  return Result<std::unique_ptr<Socket>>::Err(std::strerror(errno));
+  return std::string{std::strerror(errno)};
 }
 
 Socket::Socket(Socket &&other) noexcept
@@ -116,12 +115,12 @@ Result<i64> Socket::Send(const std::vector<std::byte> &data) const {
                    msg.size() - data_sent, 0);
     if (res == -1) {
       // NOLINTNEXTLINE(concurrency-mt-unsafe)
-      return Result<i64>::Err(std::strerror(errno));
+      return std::string{std::strerror(errno)};
     }
     data_sent += res;
   }
 
-  return Result<i64>::Ok(data_sent);
+  return data_sent;
 }
 
 Result<std::vector<std::byte>> Socket::Receive() const {
@@ -133,7 +132,7 @@ Result<std::vector<std::byte>> Socket::Receive() const {
     i64 res = recv(this->descriptor_, header.data(), header.size(), 0);
     if (res == -1) {
       // NOLINTNEXTLINE(concurrency-mt-unsafe)
-      return Result<std::vector<std::byte>>::Err(std::strerror(errno));
+      return std::string{std::strerror(errno)};
     }
     msg_size = Unmarshal<i64>{}(header);
   }
@@ -145,12 +144,12 @@ Result<std::vector<std::byte>> Socket::Receive() const {
                    msg.size() - data_received, 0);
     if (res == -1) {
       // NOLINTNEXTLINE(concurrency-mt-unsafe)
-      return Result<std::vector<std::byte>>::Err(std::strerror(errno));
+      return std::string{std::strerror(errno)};
     }
     data_received += res;
   }
 
-  return Result<std::vector<std::byte>>::Ok(std::move(msg));
+  return std::move(msg);
 }
 
 Socket::Socket(SocketAddress address, int descriptor)

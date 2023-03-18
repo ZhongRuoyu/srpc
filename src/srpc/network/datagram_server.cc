@@ -17,12 +17,11 @@ namespace srpc {
 Result<std::unique_ptr<DatagramServer>> DatagramServer::New(u16 port) {
   auto server_socket_res = ServerDatagramSocket::New(port);
   if (!server_socket_res.OK()) {
-    return Result<std::unique_ptr<DatagramServer>>::Err(
-        std::move(server_socket_res.Error()));
+    return std::move(server_socket_res.Error());
   }
   auto server = std::unique_ptr<DatagramServer>(
       new DatagramServer(std::move(server_socket_res.Value())));
-  return Result<std::unique_ptr<DatagramServer>>::Ok(std::move(server));
+  return std::move(server);
 }
 
 void DatagramServer::Listen(
