@@ -21,6 +21,10 @@ class Result {
   Result(const E &error) : value_(), error_(error) {}
   Result(E &&error) noexcept : value_(), error_(std::move(error)) {}
 
+  template <typename U, typename F>
+  Result(U &&value, F &&error)
+      : value_(std::forward<U>(value)), error_(std::forward<F>(error)) {}
+
   Result &operator=(const Result &) = default;
   Result &operator=(Result &&) noexcept = default;
 
@@ -28,40 +32,15 @@ class Result {
 
   [[nodiscard]] constexpr bool OK() const { return this->value_.has_value(); }
 
-  [[nodiscard]] constexpr T &Value() & {
-    assert(this->OK());
-    return *(this->value_);
-  }
-  [[nodiscard]] constexpr const T &Value() const & {
-    assert(this->OK());
-    return *(this->value_);
-  }
+  [[nodiscard]] constexpr T &Value() & { return *(this->value_); }
+  [[nodiscard]] constexpr const T &Value() const & { return *(this->value_); }
+  [[nodiscard]] constexpr T &&Value() && { return *(this->value_); }
+  [[nodiscard]] constexpr const T &&Value() const && { return *(this->value_); }
 
-  [[nodiscard]] constexpr T &&Value() && {
-    assert(this->OK());
-    return *(this->value_);
-  }
-  [[nodiscard]] constexpr const T &&Value() const && {
-    assert(this->OK());
-    return *(this->value_);
-  }
-
-  [[nodiscard]] constexpr E &Error() & {
-    assert(!this->OK());
-    return *(this->error_);
-  }
-  [[nodiscard]] constexpr const E &Error() const & {
-    assert(!this->OK());
-    return *(this->error_);
-  }
-  [[nodiscard]] constexpr E &&Error() && {
-    assert(!this->OK());
-    return *(this->error_);
-  }
-  [[nodiscard]] constexpr const E &&Error() const && {
-    assert(!this->OK());
-    return *(this->error_);
-  }
+  [[nodiscard]] constexpr E &Error() & { return *(this->error_); }
+  [[nodiscard]] constexpr const E &Error() const & { return *(this->error_); }
+  [[nodiscard]] constexpr E &&Error() && { return *(this->error_); }
+  [[nodiscard]] constexpr const E &&Error() const && { return *(this->error_); }
 
  private:
   Result(std::optional<T> value, std::optional<E> error)

@@ -47,4 +47,9 @@ TEST(Utils, Result) {
   ASSERT_EQ(result6.Error(), nullptr);
   ASSERT_NE(error_moved, nullptr);
   ASSERT_EQ(*error_moved, "hello, world");
+
+  Result<int> result7{1, "value is 1"};
+  ASSERT_TRUE(result7.OK());
+  ASSERT_EQ(result7.Value(), 1);
+  ASSERT_EQ(result7.Error(), "value is 1");
 }
