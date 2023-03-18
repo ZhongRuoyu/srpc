@@ -19,11 +19,11 @@ TEST(Utils, Result) {
   ASSERT_FALSE(result2.OK());
   ASSERT_EQ(result2.Error(), "error test");
 
-  Result<i32, i64> result3 = 3141592;
+  Result<i32, i64> result3 = i32(3141592);
   ASSERT_TRUE(result3.OK());
   ASSERT_EQ(result3.Value(), 3141592);
 
-  Result<i32, i64> result4 = 6535897LL;
+  Result<i32, i64> result4 = i64(6535897);
   ASSERT_FALSE(result4.OK());
   ASSERT_EQ(result4.Error(), 6535897);
 
