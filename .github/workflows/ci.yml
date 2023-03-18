@@ -17,7 +17,7 @@ jobs:
           sudo apt-get install -y --no-install-recommends build-essential cmake libgtest-dev
           sudo apt-get install -y --no-install-recommends clang-format clang-tidy
       - name: CMake
-        run: cmake -S . -B build -DBUILD_TESTING=ON
+        run: cmake -S . -B build -DBUILD_TESTING=ON -DBUILD_EXAMPLES=ON
       - name: clang-format
         run: find . \( -name '*.cc' -or -name '*.h' \) -exec clang-format --Werror --dry-run --verbose {} +
       - name: clang-tidy
@@ -32,7 +32,7 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y --no-install-recommends build-essential cmake libgtest-dev
       - name: Configure
-        run: cmake -S . -B build -DBUILD_TESTING=ON
+        run: cmake -S . -B build -DBUILD_TESTING=ON -DBUILD_EXAMPLES=ON
       - name: Build
         run: cmake --build build -j "$(nproc)"
       - name: Test

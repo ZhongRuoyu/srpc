@@ -55,3 +55,8 @@ if(BUILD_TESTING)
   enable_testing()
   add_subdirectory(test)
 endif()
+
+option(BUILD_EXAMPLES "Build examples" OFF)
+if(BUILD_EXAMPLES)
+  add_subdirectory(examples)
+endif()
