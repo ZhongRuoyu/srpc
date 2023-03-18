@@ -34,7 +34,9 @@ set(SRPC_SRCS
   src/srpc/network/socket.cc
   src/srpc/types/strings.cc
 )
-add_library(srpc SHARED)
+
+option(BUILD_SHARED_LIBS "Build srpc as a shared library" ON)
+add_library(srpc)
 target_include_directories(srpc PUBLIC include)
 target_include_directories(srpc PRIVATE src)
 target_sources(srpc PRIVATE ${SRPC_SRCS})
