@@ -135,8 +135,13 @@ Result<i64> DatagramSocket::Send(const std::vector<std::byte> &msg) const {
       return std::string{std::strerror(errno)};
     }
 
-    Result<i64> result = res;
-    return result;
+    if (i == 0) {
+      return res;
+    }
+    return {
+        res,
+        std::string{"Send succeeded after " + std::to_string(i) + " retries"},
+    };
   }
 
   return std::string{"Send failed after " + std::to_string(retry_times) +
@@ -172,8 +177,14 @@ Result<std::vector<std::byte>> DatagramSocket::Receive() const {
     }
 
     msg.resize(res);
-    Result<std::vector<std::byte>> result = std::move(msg);
-    return result;
+    if (i == 0) {
+      return std::move(msg);
+    }
+    return {
+        std::move(msg),
+        std::string{"Receive succeeded after " + std::to_string(i) +
+                    " retries"},
+    };
   }
 
   return std::string{"Receive failed after " + std::to_string(retry_times) +
