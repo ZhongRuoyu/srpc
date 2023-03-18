@@ -42,11 +42,6 @@ target_sources(srpc PRIVATE ${SRPC_SRCS})
 find_package(Threads REQUIRED)
 target_link_libraries(srpc PUBLIC Threads::Threads)
 
-if(BUILD_TESTING)
-  enable_testing()
-  add_subdirectory(test)
-endif()
-
 include(GNUInstallDirs)
 install(TARGETS srpc DESTINATION ${CMAKE_INSTALL_LIBDIR})
 foreach(header ${SRPC_HDRS})
@@ -54,3 +49,9 @@ foreach(header ${SRPC_HDRS})
   install(FILES ${header}
     DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${header_dir})
 endforeach()
+
+option(BUILD_TESTING "Build tests" OFF)
+if(BUILD_TESTING)
+  enable_testing()
+  add_subdirectory(test)
+endif()
