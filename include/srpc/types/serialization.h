@@ -3,10 +3,10 @@
 
 namespace srpc {
 
-template <typename T>
+template <typename T, typename = void>
 struct Marshal;
 
-template <typename T>
+template <typename T, typename = void>
 struct Unmarshal;
 
 }  // namespace srpc

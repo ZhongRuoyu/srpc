@@ -6,6 +6,7 @@ target_sources(srpc_tests PRIVATE
   srpc/types/floats.cc
   srpc/types/integers.cc
   srpc/types/strings.cc
+  srpc/types/vectors.cc
   srpc/utils/result.cc
 )
 target_link_libraries(srpc_tests PRIVATE

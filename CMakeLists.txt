@@ -20,6 +20,7 @@ set(SRPC_HDRS
   include/srpc/types/integers.h
   include/srpc/types/serialization.h
   include/srpc/types/strings.h
+  include/srpc/types/vectors.h
   include/srpc/utils/result.h
 )
 set(SRPC_SRCS
@@ -33,6 +34,7 @@ set(SRPC_SRCS
   src/srpc/network/server_socket.cc
   src/srpc/network/socket.cc
   src/srpc/types/strings.cc
+  src/srpc/types/vectors.cc
 )
 
 option(BUILD_SHARED_LIBS "Build srpc as a shared library" ON)
