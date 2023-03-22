@@ -27,6 +27,18 @@ struct Unmarshal<std::vector<std::vector<std::byte>>> {
       const std::vector<std::byte> &data) const;
 };
 
+template <>
+struct Marshal<std::vector<std::string>> {
+  [[nodiscard]] std::vector<std::byte> operator()(
+      const std::vector<std::string> &vec) const;
+};
+
+template <>
+struct Unmarshal<std::vector<std::string>> {
+  [[nodiscard]] std::optional<std::vector<std::string>> operator()(
+      const std::vector<std::byte> &data) const;
+};
+
 template <typename T>
 struct Marshal<
     std::vector<T>,
