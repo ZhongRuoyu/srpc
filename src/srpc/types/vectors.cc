@@ -14,13 +14,20 @@ namespace srpc {
 
 std::vector<std::byte> Marshal<std::vector<std::vector<std::byte>>>::operator()(
     const std::vector<std::vector<std::byte>> &vec) const {
-  std::vector<std::byte> data;
-  auto len = Marshal<i64>{}(std::ssize(vec));
-  data.insert(data.end(), len.begin(), len.end());
-  for (const auto &element : vec) {
-    auto element_len = Marshal<i64>{}(std::ssize(element));
-    data.insert(data.end(), element_len.begin(), element_len.end());
+  std::vector<std::byte> data(sizeof(i64) * (vec.size() + 1));
+  Marshal<i64>{}(std::ssize(vec), std::span<std::byte, sizeof(i64)>{
+                                      data.data(), data.data() + sizeof(i64)});
+
+  i64 total_len = 0;
+  for (i64 i = 0; i < vec.size(); ++i) {
+    Marshal<i64>{}(std::ssize(vec[i]),
+                   std::span<std::byte, sizeof(i64)>{
+                       data.data() + sizeof(i64) * (1 + i),
+                       data.data() + sizeof(i64) * (1 + i + 1)});
+    total_len += std::ssize(vec[i]);
   }
+
+  data.reserve(sizeof(i64) * (vec.size() + 1) + total_len);
   for (const auto &element : vec) {
     data.insert(data.end(), element.begin(), element.end());
   }
@@ -34,32 +41,26 @@ Unmarshal<std::vector<std::vector<std::byte>>>::operator()(
     return {};
   }
 
-  std::array<std::byte, sizeof(i64)> len_arr;
-  std::copy(data.begin(), data.begin() + sizeof(i64), len_arr.begin());
-  auto len = Unmarshal<i64>{}(len_arr);
-
+  auto len = Unmarshal<i64>{}(std::span<const std::byte, sizeof(i64)>{
+      data.data(), data.data() + sizeof(i64)});
   if (data.size() < sizeof(i64) * (1 + len)) {
     return {};
   }
+
   std::vector<i64> element_lens;
   element_lens.reserve(len);
   i64 total_len = 0;
   for (i64 i = 0; i < len; ++i) {
-    std::array<std::byte, sizeof(i64)> element_len_arr;
-    auto element_len_begin =
-        data.begin() +
-        static_cast<std::iter_difference_t<decltype(data.begin())>>(
-            sizeof(i64) * (1 + i));
-    std::copy(element_len_begin, element_len_begin + sizeof(i64),
-              element_len_arr.begin());
-    auto element_len = Unmarshal<i64>{}(element_len_arr);
+    auto element_len = Unmarshal<i64>{}(std::span<const std::byte, sizeof(i64)>{
+        data.data() + sizeof(i64) * (1 + i),
+        data.data() + sizeof(i64) * (1 + i + 1)});
     element_lens.emplace_back(element_len);
     total_len += element_len;
   }
-
   if (data.size() != sizeof(i64) * (1 + len) + total_len) {
     return {};
   }
+
   std::vector<std::vector<std::byte>> result;
   result.reserve(len);
   i64 p = static_cast<i64>(sizeof(i64) * (1 + len));
@@ -72,13 +73,20 @@ Unmarshal<std::vector<std::vector<std::byte>>>::operator()(
 
 std::vector<std::byte> Marshal<std::vector<std::string>>::operator()(
     const std::vector<std::string> &vec) const {
-  std::vector<std::byte> data;
-  auto len = Marshal<i64>{}(std::ssize(vec));
-  data.insert(data.end(), len.begin(), len.end());
-  for (const auto &str : vec) {
-    auto str_len = Marshal<i64>{}(std::ssize(str));
-    data.insert(data.end(), str_len.begin(), str_len.end());
+  std::vector<std::byte> data(sizeof(i64) * (vec.size() + 1));
+  Marshal<i64>{}(std::ssize(vec), std::span<std::byte, sizeof(i64)>{
+                                      data.data(), data.data() + sizeof(i64)});
+
+  i64 total_len = 0;
+  for (i64 i = 0; i < vec.size(); ++i) {
+    Marshal<i64>{}(std::ssize(vec[i]),
+                   std::span<std::byte, sizeof(i64)>{
+                       data.data() + sizeof(i64) * (1 + i),
+                       data.data() + sizeof(i64) * (1 + i + 1)});
+    total_len += std::ssize(vec[i]);
   }
+
+  data.reserve(sizeof(i64) * (vec.size() + 1) + total_len);
   for (const auto &str : vec) {
     std::transform(str.begin(), str.end(), std::back_inserter(data),
                    [](char c) { return std::byte(c); });
@@ -93,31 +101,26 @@ Unmarshal<std::vector<std::string>>::operator()(
     return {};
   }
 
-  std::array<std::byte, sizeof(i64)> len_arr;
-  std::copy(data.begin(), data.begin() + sizeof(i64), len_arr.begin());
-  auto len = Unmarshal<i64>{}(len_arr);
-
+  auto len = Unmarshal<i64>{}(std::span<const std::byte, sizeof(i64)>{
+      data.data(), data.data() + sizeof(i64)});
   if (data.size() < sizeof(i64) * (1 + len)) {
     return {};
   }
+
   std::vector<i64> str_lens;
   str_lens.reserve(len);
   i64 total_len = 0;
   for (i64 i = 0; i < len; ++i) {
-    std::array<std::byte, sizeof(i64)> str_len_arr;
-    auto str_len_begin =
-        data.begin() +
-        static_cast<std::iter_difference_t<decltype(data.begin())>>(
-            sizeof(i64) * (1 + i));
-    std::copy(str_len_begin, str_len_begin + sizeof(i64), str_len_arr.begin());
-    auto element_len = Unmarshal<i64>{}(str_len_arr);
-    str_lens.emplace_back(element_len);
-    total_len += element_len;
+    auto str_len = Unmarshal<i64>{}(std::span<const std::byte, sizeof(i64)>{
+        data.data() + sizeof(i64) * (1 + i),
+        data.data() + sizeof(i64) * (1 + i + 1)});
+    str_lens.emplace_back(str_len);
+    total_len += str_len;
   }
-
   if (data.size() != sizeof(i64) * (1 + len) + total_len) {
     return {};
   }
+
   std::vector<std::string> result;
   result.reserve(len);
   i64 p = static_cast<i64>(sizeof(i64) * (1 + len));

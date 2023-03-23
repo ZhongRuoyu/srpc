@@ -2,8 +2,8 @@
 
 #include <algorithm>
 #include <cstddef>
-#include <iterator>
 #include <optional>
+#include <span>
 #include <vector>
 
 #include "srpc/types/integers.h"
@@ -16,12 +16,8 @@ std::optional<std::vector<std::byte>> RemoveMessageHeader(
     return {};
   }
 
-  i64 data_size = 0;
-  {
-    std::array<std::byte, sizeof(i64)> header;
-    std::copy(msg.begin(), msg.begin() + sizeof(i64), header.begin());
-    data_size = Unmarshal<i64>{}(header);
-  }
+  i64 data_size = Unmarshal<i64>{}(std::span<const std::byte, sizeof(i64)>{
+      msg.data(), msg.data() + sizeof(i64)});
   if (sizeof(i64) + data_size != msg.size()) {
     return {};
   }
@@ -31,10 +27,10 @@ std::optional<std::vector<std::byte>> RemoveMessageHeader(
 }
 
 std::vector<std::byte> MakeMessage(const std::vector<std::byte> &data) {
-  std::vector<std::byte> msg;
-  auto header = Marshal<i64>{}(std::ssize(data));
-  std::copy(header.begin(), header.end(), std::back_inserter(msg));
-  std::copy(data.begin(), data.end(), std::back_inserter(msg));
+  std::vector<std::byte> msg(sizeof(i64) + data.size());
+  Marshal<i64>{}(std::ssize(data), std::span<std::byte, sizeof(i64)>{
+                                       msg.data(), msg.data() + sizeof(i64)});
+  std::copy(data.begin(), data.end(), msg.data() + sizeof(i64));
   return msg;
 }
 

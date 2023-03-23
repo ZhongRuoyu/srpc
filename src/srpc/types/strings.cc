@@ -5,6 +5,7 @@
 #include <cstddef>
 #include <iterator>
 #include <optional>
+#include <span>
 #include <string>
 #include <vector>
 
@@ -15,24 +16,22 @@ namespace srpc {
 
 std::vector<std::byte> Marshal<std::string>::operator()(
     const std::string &str) const {
-  std::vector<std::byte> data;
-  auto len = Marshal<i64>{}(std::ssize(str));
-  data.reserve(len.size() + str.size());
-  std::copy(len.begin(), len.end(), std::back_inserter(data));
-  std::transform(str.begin(), str.end(), std::back_inserter(data),
+  std::vector<std::byte> data(sizeof(i64) + str.size());
+  Marshal<i64>{}(std::ssize(str), std::span<std::byte, sizeof(i64)>{
+                                      data.data(), data.data() + sizeof(i64)});
+  std::transform(str.begin(), str.end(), data.begin() + sizeof(i64),
                  [](char c) { return std::byte(c); });
   return data;
 }
 
 std::optional<std::string> Unmarshal<std::string>::operator()(
-    const std::vector<std::byte> &data) const {
+    const std::span<const std::byte> &data) const {
   if (data.size() < sizeof(i64)) {
     return {};
   }
 
-  std::array<std::byte, sizeof(i64)> len_arr;
-  std::copy(data.begin(), data.begin() + sizeof(i64), len_arr.begin());
-  auto len = Unmarshal<i64>{}(len_arr);
+  auto len = Unmarshal<i64>{}(std::span<const std::byte, sizeof(i64)>{
+      data.data(), data.data() + sizeof(i64)});
   if (data.size() != sizeof(i64) + len) {
     return {};
   }

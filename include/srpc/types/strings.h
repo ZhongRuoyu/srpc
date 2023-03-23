@@ -3,6 +3,7 @@
 
 #include <cstddef>
 #include <optional>
+#include <span>
 #include <string>
 #include <vector>
 
@@ -18,7 +19,7 @@ struct Marshal<std::string> {
 template <>
 struct Unmarshal<std::string> {
   [[nodiscard]] std::optional<std::string> operator()(
-      const std::vector<std::byte> &data) const;
+      const std::span<const std::byte> &data) const;
 };
 
 }  // namespace srpc

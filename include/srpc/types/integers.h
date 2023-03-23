@@ -6,6 +6,7 @@
 #include <cassert>
 #include <cstddef>
 #include <cstdint>
+#include <span>
 #include <type_traits>
 
 #include "srpc/types/serialization.h"
@@ -52,122 +53,174 @@ template <typename T, std::enable_if_t<std::is_integral_v<T>, bool> = true>
 
 template <>
 struct Marshal<i8> {
-  [[nodiscard]] constexpr std::array<std::byte, sizeof(i8)> operator()(
-      i8 val) const {
+  constexpr void operator()(i8 val,
+                            std::span<std::byte, sizeof(i8)> spn) const {
     if constexpr (std::endian::native != std::endian::little) {
       val = ReverseBytes(val);
     }
-    return {std::byte(val)};
+    spn[0] = std::byte(val);
+  }
+
+  [[nodiscard]] constexpr std::array<std::byte, sizeof(i8)> operator()(
+      i8 val) const {
+    std::array<std::byte, sizeof(i8)> data;
+    (*this)(val, std::span{data});
+    return data;
   }
 };
 
 template <>
 struct Marshal<i16> {
-  [[nodiscard]] constexpr std::array<std::byte, sizeof(i16)> operator()(
-      i16 val) const {
+  constexpr void operator()(i16 val,
+                            std::span<std::byte, sizeof(i16)> spn) const {
     if constexpr (std::endian::native != std::endian::little) {
       val = ReverseBytes(val);
     }
-    return {
-        std::byte(val & 0xff),
-        std::byte((val >> 8) & 0xff),
-    };
+    spn[0] = std::byte(val & 0xff);
+    spn[1] = std::byte((val >> 8) & 0xff);
+  }
+
+  [[nodiscard]] constexpr std::array<std::byte, sizeof(i16)> operator()(
+      i16 val) const {
+    std::array<std::byte, sizeof(i16)> data;
+    (*this)(val, std::span{data});
+    return data;
   }
 };
 
 template <>
 struct Marshal<i32> {
-  [[nodiscard]] constexpr std::array<std::byte, sizeof(i32)> operator()(
-      i32 val) const {
+  constexpr void operator()(i32 val,
+                            std::span<std::byte, sizeof(i32)> spn) const {
     if constexpr (std::endian::native != std::endian::little) {
       val = ReverseBytes(val);
     }
-    return {
-        std::byte(val & 0xff),
-        std::byte((val >> 8) & 0xff),
-        std::byte((val >> 16) & 0xff),
-        std::byte((val >> 24) & 0xff),
-    };
+    spn[0] = std::byte(val & 0xff);
+    spn[1] = std::byte((val >> 8) & 0xff);
+    spn[2] = std::byte((val >> 16) & 0xff);
+    spn[3] = std::byte((val >> 24) & 0xff);
+  }
+
+  [[nodiscard]] constexpr std::array<std::byte, sizeof(i32)> operator()(
+      i32 val) const {
+    std::array<std::byte, sizeof(i32)> data;
+    (*this)(val, std::span{data});
+    return data;
   }
 };
 
 template <>
 struct Marshal<i64> {
-  [[nodiscard]] constexpr std::array<std::byte, sizeof(i64)> operator()(
-      i64 val) const {
+  constexpr void operator()(i64 val,
+                            std::span<std::byte, sizeof(i64)> spn) const {
     if constexpr (std::endian::native != std::endian::little) {
       val = ReverseBytes(val);
     }
-    return {
-        std::byte(val & 0xff),         std::byte((val >> 8) & 0xff),
-        std::byte((val >> 16) & 0xff), std::byte((val >> 24) & 0xff),
-        std::byte((val >> 32) & 0xff), std::byte((val >> 40) & 0xff),
-        std::byte((val >> 48) & 0xff), std::byte((val >> 56) & 0xff),
-    };
+    spn[0] = std::byte(val & 0xff);
+    spn[1] = std::byte((val >> 8) & 0xff),
+    spn[2] = std::byte((val >> 16) & 0xff);
+    spn[3] = std::byte((val >> 24) & 0xff),
+    spn[4] = std::byte((val >> 32) & 0xff);
+    spn[5] = std::byte((val >> 40) & 0xff),
+    spn[6] = std::byte((val >> 48) & 0xff);
+    spn[7] = std::byte((val >> 56) & 0xff);
+  }
+
+  [[nodiscard]] constexpr std::array<std::byte, sizeof(i64)> operator()(
+      i64 val) const {
+    std::array<std::byte, sizeof(i64)> data;
+    (*this)(val, std::span{data});
+    return data;
   }
 };
 
 template <>
 struct Marshal<u8> {
-  [[nodiscard]] constexpr std::array<std::byte, sizeof(u8)> operator()(
-      u8 val) const {
+  constexpr void operator()(u8 val,
+                            std::span<std::byte, sizeof(u8)> spn) const {
     if constexpr (std::endian::native != std::endian::little) {
       val = ReverseBytes(val);
     }
-    return {std::byte(val)};
+    spn[0] = std::byte(val);
+  }
+
+  [[nodiscard]] constexpr std::array<std::byte, sizeof(u8)> operator()(
+      u8 val) const {
+    std::array<std::byte, sizeof(u8)> data;
+    (*this)(val, std::span{data});
+    return data;
   }
 };
 
 template <>
 struct Marshal<u16> {
-  [[nodiscard]] constexpr std::array<std::byte, sizeof(u16)> operator()(
-      u16 val) const {
+  constexpr void operator()(u16 val,
+                            std::span<std::byte, sizeof(u16)> spn) const {
     if constexpr (std::endian::native != std::endian::little) {
       val = ReverseBytes(val);
     }
-    return {
-        std::byte(val & 0xff),
-        std::byte((val >> 8) & 0xff),
-    };
+    spn[0] = std::byte(val & 0xff);
+    spn[1] = std::byte((val >> 8) & 0xff);
+  }
+
+  [[nodiscard]] constexpr std::array<std::byte, sizeof(u16)> operator()(
+      u16 val) const {
+    std::array<std::byte, sizeof(u16)> data;
+    (*this)(val, std::span{data});
+    return data;
   }
 };
 
 template <>
 struct Marshal<u32> {
-  [[nodiscard]] constexpr std::array<std::byte, sizeof(u32)> operator()(
-      u32 val) const {
+  constexpr void operator()(u32 val,
+                            std::span<std::byte, sizeof(u32)> spn) const {
     if constexpr (std::endian::native != std::endian::little) {
       val = ReverseBytes(val);
     }
-    return {
-        std::byte(val & 0xff),
-        std::byte((val >> 8) & 0xff),
-        std::byte((val >> 16) & 0xff),
-        std::byte((val >> 24) & 0xff),
-    };
+    spn[0] = std::byte(val & 0xff);
+    spn[1] = std::byte((val >> 8) & 0xff);
+    spn[2] = std::byte((val >> 16) & 0xff);
+    spn[3] = std::byte((val >> 24) & 0xff);
+  }
+
+  [[nodiscard]] constexpr std::array<std::byte, sizeof(u32)> operator()(
+      u32 val) const {
+    std::array<std::byte, sizeof(u32)> data;
+    (*this)(val, std::span{data});
+    return data;
   }
 };
 
 template <>
 struct Marshal<u64> {
-  [[nodiscard]] constexpr std::array<std::byte, sizeof(u64)> operator()(
-      u64 val) const {
+  constexpr void operator()(u64 val,
+                            std::span<std::byte, sizeof(u64)> spn) const {
     if constexpr (std::endian::native != std::endian::little) {
       val = ReverseBytes(val);
     }
-    return {
-        std::byte(val & 0xff),         std::byte((val >> 8) & 0xff),
-        std::byte((val >> 16) & 0xff), std::byte((val >> 24) & 0xff),
-        std::byte((val >> 32) & 0xff), std::byte((val >> 40) & 0xff),
-        std::byte((val >> 48) & 0xff), std::byte((val >> 56) & 0xff),
-    };
+    spn[0] = std::byte(val & 0xff);
+    spn[1] = std::byte((val >> 8) & 0xff),
+    spn[2] = std::byte((val >> 16) & 0xff);
+    spn[3] = std::byte((val >> 24) & 0xff),
+    spn[4] = std::byte((val >> 32) & 0xff);
+    spn[5] = std::byte((val >> 40) & 0xff),
+    spn[6] = std::byte((val >> 48) & 0xff);
+    spn[7] = std::byte((val >> 56) & 0xff);
+  }
+
+  [[nodiscard]] constexpr std::array<std::byte, sizeof(u64)> operator()(
+      u64 val) const {
+    std::array<std::byte, sizeof(u64)> data;
+    (*this)(val, std::span{data});
+    return data;
   }
 };
 
 template <>
 struct Unmarshal<i8> {
   [[nodiscard]] constexpr i8 operator()(
-      std::array<std::byte, sizeof(i8)> data) const {
+      std::span<const std::byte, sizeof(i8)> data) const {
     i8 val = i8(data[0]);
     if constexpr (std::endian::native != std::endian::little) {
       val = ReverseBytes(val);
@@ -179,7 +232,7 @@ struct Unmarshal<i8> {
 template <>
 struct Unmarshal<i16> {
   [[nodiscard]] constexpr i16 operator()(
-      std::array<std::byte, sizeof(i16)> data) const {
+      std::span<const std::byte, sizeof(i16)> data) const {
     i16 val = i16(i16(data[0]) | (i16(data[1]) << 8));
     if constexpr (std::endian::native != std::endian::little) {
       val = ReverseBytes(val);
@@ -191,7 +244,7 @@ struct Unmarshal<i16> {
 template <>
 struct Unmarshal<i32> {
   [[nodiscard]] constexpr i32 operator()(
-      std::array<std::byte, sizeof(i32)> data) const {
+      std::span<const std::byte, sizeof(i32)> data) const {
     i32 val = i32(i32(data[0]) | (i32(data[1]) << 8) | (i32(data[2]) << 16) |
                   (i32(data[3]) << 24));
     if constexpr (std::endian::native != std::endian::little) {
@@ -204,7 +257,7 @@ struct Unmarshal<i32> {
 template <>
 struct Unmarshal<i64> {
   [[nodiscard]] constexpr i64 operator()(
-      std::array<std::byte, sizeof(i64)> data) const {
+      std::span<const std::byte, sizeof(i64)> data) const {
     i64 val =
         i64(i64(data[0]) | (i64(data[1]) << 8) | (i64(data[2]) << 16) |
             (i64(data[3]) << 24) | (i64(data[4]) << 32) | (i64(data[5]) << 40) |
@@ -219,7 +272,7 @@ struct Unmarshal<i64> {
 template <>
 struct Unmarshal<u8> {
   [[nodiscard]] constexpr u8 operator()(
-      std::array<std::byte, sizeof(u8)> data) const {
+      std::span<const std::byte, sizeof(u8)> data) const {
     u8 val = u8(data[0]);
     if constexpr (std::endian::native != std::endian::little) {
       val = ReverseBytes(val);
@@ -231,7 +284,7 @@ struct Unmarshal<u8> {
 template <>
 struct Unmarshal<u16> {
   [[nodiscard]] constexpr u16 operator()(
-      std::array<std::byte, sizeof(u16)> data) const {
+      std::span<const std::byte, sizeof(u16)> data) const {
     u16 val = u16(u16(data[0]) | (u16(data[1]) << 8));
     if constexpr (std::endian::native != std::endian::little) {
       val = ReverseBytes(val);
@@ -243,7 +296,7 @@ struct Unmarshal<u16> {
 template <>
 struct Unmarshal<u32> {
   [[nodiscard]] constexpr u32 operator()(
-      std::array<std::byte, sizeof(u32)> data) const {
+      std::span<const std::byte, sizeof(u32)> data) const {
     u32 val = u32(u32(data[0]) | (u32(data[1]) << 8) | (u32(data[2]) << 16) |
                   (u32(data[3]) << 24));
     if constexpr (std::endian::native != std::endian::little) {
@@ -256,7 +309,7 @@ struct Unmarshal<u32> {
 template <>
 struct Unmarshal<u64> {
   [[nodiscard]] constexpr u64 operator()(
-      std::array<std::byte, sizeof(u64)> data) const {
+      std::span<const std::byte, sizeof(u64)> data) const {
     u64 val =
         u64(u64(data[0]) | (u64(data[1]) << 8) | (u64(data[2]) << 16) |
             (u64(data[3]) << 24) | (u64(data[4]) << 32) | (u64(data[5]) << 40) |
