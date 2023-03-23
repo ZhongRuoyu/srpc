@@ -19,6 +19,7 @@ static std::basic_ostream<CharT, Traits> &operator<<(
     case srpc::kIPv6:
       return ostream << "[" << addr.address << "]:" << addr.port;
   }
+  assert(false);
 }
 
 int main(int argc, char **argv) {
