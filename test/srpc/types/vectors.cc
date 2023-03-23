@@ -8,7 +8,6 @@
 #include "srpc/types/floats.h"
 #include "srpc/types/integers.h"
 #include "srpc/types/serialization.h"
-#include "srpc/types/strings.h"
 
 using namespace srpc;
 
