@@ -43,11 +43,11 @@ int main(int argc, char **argv) {
       return srpc::Marshal<std::string>{}(req_data_res.Error());
     }
     auto maybe_req = srpc::Unmarshal<std::string>{}(req_data_res.Value());
-    if (!maybe_req.has_value()) {
+    if (!maybe_req.second.has_value()) {
       std::cerr << "deserialization failure" << std::endl;
       return srpc::Marshal<std::string>{}("deserialization failure");
     }
-    auto req = std::move(*maybe_req);
+    auto req = std::move(*maybe_req.second);
     std::cout << "server received request from " << from_addr << ": " << req
               << std::endl;
 

@@ -7,10 +7,12 @@
 #include <iostream>
 #include <iterator>
 #include <optional>
+#include <span>
 #include <type_traits>
 #include <utility>
 #include <vector>
 
+#include "srpc/types/integers.h"
 #include "srpc/types/serialization.h"
 
 namespace srpc {
@@ -23,8 +25,9 @@ struct Marshal<std::vector<std::vector<std::byte>>> {
 
 template <>
 struct Unmarshal<std::vector<std::vector<std::byte>>> {
-  [[nodiscard]] std::optional<std::vector<std::vector<std::byte>>> operator()(
-      const std::vector<std::byte> &data) const;
+  [[nodiscard]] std::pair<i64,
+                          std::optional<std::vector<std::vector<std::byte>>>>
+  operator()(std::span<const std::byte> data) const;
 };
 
 template <>
@@ -35,8 +38,8 @@ struct Marshal<std::vector<std::string>> {
 
 template <>
 struct Unmarshal<std::vector<std::string>> {
-  [[nodiscard]] std::optional<std::vector<std::string>> operator()(
-      const std::vector<std::byte> &data) const;
+  [[nodiscard]] std::pair<i64, std::optional<std::vector<std::string>>>
+  operator()(std::span<const std::byte> data) const;
 };
 
 template <typename T>
@@ -72,25 +75,24 @@ struct Marshal<std::vector<T>, typename std::enable_if_t<std::is_same_v<
 template <typename T>
 struct Unmarshal<std::vector<T>,
                  typename std::enable_if_t<std::is_same_v<
-                     std::invoke_result_t<Unmarshal<T>, std::vector<std::byte>>,
+                     std::invoke_result_t<Unmarshal<T>, std::span<std::byte>>,
                      std::optional<T>>>> {
-  [[nodiscard]] std::optional<std::vector<T>> operator()(
-      const std::vector<std::byte> &data) const {
-    auto maybe_vec_bytes =
-        Unmarshal<std::vector<std::vector<std::byte>>>{}(data);
-    if (maybe_vec_bytes == std::nullopt) {
-      return {};
+  [[nodiscard]] std::pair<i64, std::optional<std::vector<T>>> operator()(
+      std::span<const std::byte> data) const {
+    auto maybe_vec = Unmarshal<std::vector<std::vector<std::byte>>>{}(data);
+    if (maybe_vec.second == std::nullopt) {
+      return {0, {}};
     }
 
     std::vector<T> vec;
-    for (const auto &element_bytes : *maybe_vec_bytes) {
+    for (const auto &element_bytes : *maybe_vec.second) {
       std::optional<T> maybe_element = Unmarshal<T>{}(element_bytes);
       if (maybe_element == std::nullopt) {
-        return {};
+        return {0, {}};
       }
       vec.emplace_back(std::move(*maybe_element));
     }
-    return vec;
+    return {maybe_vec.first, vec};
   }
 };
 
@@ -98,28 +100,25 @@ template <typename T>
 struct Unmarshal<
     std::vector<T>,
     typename std::enable_if_t<std::is_same_v<
-        std::invoke_result_t<Unmarshal<T>, std::array<std::byte, sizeof(T)>>,
+        std::invoke_result_t<Unmarshal<T>, std::span<std::byte, sizeof(T)>>,
         T>>> {
-  [[nodiscard]] std::optional<std::vector<T>> operator()(
-      const std::vector<std::byte> &data) const {
-    auto maybe_vec_bytes =
-        Unmarshal<std::vector<std::vector<std::byte>>>{}(data);
-    if (maybe_vec_bytes == std::nullopt) {
-      return {};
+  [[nodiscard]] std::pair<i64, std::optional<std::vector<T>>> operator()(
+      std::span<const std::byte> data) const {
+    auto res = Unmarshal<std::vector<std::vector<std::byte>>>{}(data);
+    if (res.second == std::nullopt) {
+      return {0, {}};
     }
 
     std::vector<T> vec;
-    for (const auto &element_bytes : *maybe_vec_bytes) {
+    for (const auto &element_bytes : *res.second) {
       if (element_bytes.size() != sizeof(T)) {
-        return {};
+        return {0, {}};
       }
-      std::array<std::byte, sizeof(T)> element_bytes_arr;
-      std::copy(element_bytes.begin(), element_bytes.end(),
-                element_bytes_arr.begin());
-      T element = Unmarshal<T>{}(element_bytes_arr);
+      T element = Unmarshal<T>{}(std::span<const std::byte, sizeof(T)>{
+          element_bytes.data(), element_bytes.data() + sizeof(T)});
       vec.emplace_back(element);
     }
-    return vec;
+    return {res.first, vec};
   }
 };
 

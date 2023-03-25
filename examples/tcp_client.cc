@@ -26,11 +26,11 @@ int main(int argc, char **argv) {
     return -1;
   }
   auto res_data = srpc::Unmarshal<std::string>{}(res_data_res.Value());
-  if (!res_data.has_value()) {
+  if (!res_data.second.has_value()) {
     std::cerr << "deserialization failure" << std::endl;
     return -1;
   }
-  auto res = *res_data;
+  auto res = *res_data.second;
   std::cout << "client received response: " << res << std::endl;
 
   return 0;

@@ -7,6 +7,7 @@
 #include <optional>
 #include <span>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "srpc/types/integers.h"
@@ -24,22 +25,22 @@ std::vector<std::byte> Marshal<std::string>::operator()(
   return data;
 }
 
-std::optional<std::string> Unmarshal<std::string>::operator()(
-    const std::span<const std::byte> &data) const {
+std::pair<i64, std::optional<std::string>> Unmarshal<std::string>::operator()(
+    std::span<const std::byte> data) const {
   if (data.size() < sizeof(i64)) {
-    return {};
+    return {0, {}};
   }
 
   auto len = Unmarshal<i64>{}(std::span<const std::byte, sizeof(i64)>{
       data.data(), data.data() + sizeof(i64)});
-  if (data.size() != sizeof(i64) + len) {
-    return {};
+  if (data.size() < sizeof(i64) + len) {
+    return {0, {}};
   }
 
   std::string str;
-  std::transform(data.begin() + sizeof(i64), data.end(),
+  std::transform(data.begin() + sizeof(i64), data.begin() + sizeof(i64) + len,
                  std::back_inserter(str), [](std::byte b) { return char(b); });
-  return str;
+  return {sizeof(i64) + len, str};
 }
 
 }  // namespace srpc

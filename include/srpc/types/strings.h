@@ -5,8 +5,10 @@
 #include <optional>
 #include <span>
 #include <string>
+#include <utility>
 #include <vector>
 
+#include "srpc/types/integers.h"
 #include "srpc/types/serialization.h"
 
 namespace srpc {
@@ -18,8 +20,8 @@ struct Marshal<std::string> {
 
 template <>
 struct Unmarshal<std::string> {
-  [[nodiscard]] std::optional<std::string> operator()(
-      const std::span<const std::byte> &data) const;
+  [[nodiscard]] std::pair<i64, std::optional<std::string>> operator()(
+      std::span<const std::byte> data) const;
 };
 
 }  // namespace srpc

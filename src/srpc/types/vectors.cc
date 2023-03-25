@@ -34,17 +34,17 @@ std::vector<std::byte> Marshal<std::vector<std::vector<std::byte>>>::operator()(
   return data;
 }
 
-std::optional<std::vector<std::vector<std::byte>>>
+std::pair<i64, std::optional<std::vector<std::vector<std::byte>>>>
 Unmarshal<std::vector<std::vector<std::byte>>>::operator()(
-    const std::vector<std::byte> &data) const {
+    std::span<const std::byte> data) const {
   if (data.size() < sizeof(i64)) {
-    return {};
+    return {0, {}};
   }
 
   auto len = Unmarshal<i64>{}(std::span<const std::byte, sizeof(i64)>{
       data.data(), data.data() + sizeof(i64)});
   if (data.size() < sizeof(i64) * (1 + len)) {
-    return {};
+    return {0, {}};
   }
 
   std::vector<i64> element_lens;
@@ -57,8 +57,8 @@ Unmarshal<std::vector<std::vector<std::byte>>>::operator()(
     element_lens.emplace_back(element_len);
     total_len += element_len;
   }
-  if (data.size() != sizeof(i64) * (1 + len) + total_len) {
-    return {};
+  if (data.size() < sizeof(i64) * (1 + len) + total_len) {
+    return {0, {}};
   }
 
   std::vector<std::vector<std::byte>> result;
@@ -68,7 +68,7 @@ Unmarshal<std::vector<std::vector<std::byte>>>::operator()(
     result.emplace_back(data.begin() + p, data.begin() + p + element_lens[i]);
     p += element_lens[i];
   }
-  return result;
+  return {p, result};
 }
 
 std::vector<std::byte> Marshal<std::vector<std::string>>::operator()(
@@ -94,17 +94,17 @@ std::vector<std::byte> Marshal<std::vector<std::string>>::operator()(
   return data;
 }
 
-std::optional<std::vector<std::string>>
+std::pair<i64, std::optional<std::vector<std::string>>>
 Unmarshal<std::vector<std::string>>::operator()(
-    const std::vector<std::byte> &data) const {
+    std::span<const std::byte> data) const {
   if (data.size() < sizeof(i64)) {
-    return {};
+    return {0, {}};
   }
 
   auto len = Unmarshal<i64>{}(std::span<const std::byte, sizeof(i64)>{
       data.data(), data.data() + sizeof(i64)});
   if (data.size() < sizeof(i64) * (1 + len)) {
-    return {};
+    return {0, {}};
   }
 
   std::vector<i64> str_lens;
@@ -118,7 +118,7 @@ Unmarshal<std::vector<std::string>>::operator()(
     total_len += str_len;
   }
   if (data.size() != sizeof(i64) * (1 + len) + total_len) {
-    return {};
+    return {0, {}};
   }
 
   std::vector<std::string> result;
@@ -132,7 +132,7 @@ Unmarshal<std::vector<std::string>>::operator()(
     result.emplace_back(std::move(str));
     p += str_lens[i];
   }
-  return result;
+  return {p, result};
 }
 
 }  // namespace srpc
