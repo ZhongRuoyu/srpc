@@ -98,6 +98,35 @@ struct Unmarshal<
 };
 
 template <typename T>
+struct Unmarshal<
+    std::vector<T>,
+    typename std::enable_if_t<std::is_same_v<
+        std::invoke_result_t<Unmarshal<T>, std::span<const std::byte>>,
+        std::pair<i64, std::optional<T>>>>> {
+  [[nodiscard]] std::pair<i64, std::optional<std::vector<T>>> operator()(
+      std::span<const std::byte> data) const {
+    auto maybe_vec = Unmarshal<std::vector<std::vector<std::byte>>>{}(data);
+    if (maybe_vec.second == std::nullopt) {
+      return {0, {}};
+    }
+
+    std::vector<T> vec;
+    for (const auto &element_bytes : *maybe_vec.second) {
+      std::pair<i64, std::optional<T>> element_res =
+          Unmarshal<T>{}(element_bytes);
+      if (!element_res.second.has_value()) {
+        return {0, {}};
+      }
+      if (element_res.first != element_bytes.size()) {
+        return {0, {}};
+      }
+      vec.emplace_back(std::move(*element_res));
+    }
+    return {maybe_vec.first, vec};
+  }
+};
+
+template <typename T>
 struct Unmarshal<std::vector<T>,
                  typename std::enable_if_t<std::is_same_v<
                      std::invoke_result_t<
