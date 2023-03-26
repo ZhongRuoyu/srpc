@@ -120,7 +120,7 @@ struct Unmarshal<
       if (element_res.first != element_bytes.size()) {
         return {0, {}};
       }
-      vec.emplace_back(std::move(*element_res));
+      vec.emplace_back(std::move(*element_res.second));
     }
     return {maybe_vec.first, vec};
   }
