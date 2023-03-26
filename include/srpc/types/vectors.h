@@ -73,10 +73,11 @@ struct Marshal<std::vector<T>, typename std::enable_if_t<std::is_same_v<
 };
 
 template <typename T>
-struct Unmarshal<std::vector<T>,
-                 typename std::enable_if_t<std::is_same_v<
-                     std::invoke_result_t<Unmarshal<T>, std::span<std::byte>>,
-                     std::optional<T>>>> {
+struct Unmarshal<
+    std::vector<T>,
+    typename std::enable_if_t<std::is_same_v<
+        std::invoke_result_t<Unmarshal<T>, std::span<const std::byte>>,
+        std::optional<T>>>> {
   [[nodiscard]] std::pair<i64, std::optional<std::vector<T>>> operator()(
       std::span<const std::byte> data) const {
     auto maybe_vec = Unmarshal<std::vector<std::vector<std::byte>>>{}(data);
@@ -97,11 +98,11 @@ struct Unmarshal<std::vector<T>,
 };
 
 template <typename T>
-struct Unmarshal<
-    std::vector<T>,
-    typename std::enable_if_t<std::is_same_v<
-        std::invoke_result_t<Unmarshal<T>, std::span<std::byte, sizeof(T)>>,
-        T>>> {
+struct Unmarshal<std::vector<T>,
+                 typename std::enable_if_t<std::is_same_v<
+                     std::invoke_result_t<
+                         Unmarshal<T>, std::span<const std::byte, sizeof(T)>>,
+                     T>>> {
   [[nodiscard]] std::pair<i64, std::optional<std::vector<T>>> operator()(
       std::span<const std::byte> data) const {
     auto res = Unmarshal<std::vector<std::vector<std::byte>>>{}(data);
