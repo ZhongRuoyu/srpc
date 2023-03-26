@@ -81,14 +81,14 @@ struct Unmarshal<
   [[nodiscard]] std::pair<i64, std::optional<std::vector<T>>> operator()(
       std::span<const std::byte> data) const {
     auto maybe_vec = Unmarshal<std::vector<std::vector<std::byte>>>{}(data);
-    if (maybe_vec.second == std::nullopt) {
+    if (!maybe_vec.second.has_value()) {
       return {0, {}};
     }
 
     std::vector<T> vec;
     for (const auto &element_bytes : *maybe_vec.second) {
       std::optional<T> maybe_element = Unmarshal<T>{}(element_bytes);
-      if (maybe_element == std::nullopt) {
+      if (!maybe_element.has_value()) {
         return {0, {}};
       }
       vec.emplace_back(std::move(*maybe_element));
@@ -106,7 +106,7 @@ struct Unmarshal<
   [[nodiscard]] std::pair<i64, std::optional<std::vector<T>>> operator()(
       std::span<const std::byte> data) const {
     auto maybe_vec = Unmarshal<std::vector<std::vector<std::byte>>>{}(data);
-    if (maybe_vec.second == std::nullopt) {
+    if (!maybe_vec.second.has_value()) {
       return {0, {}};
     }
 
@@ -135,7 +135,7 @@ struct Unmarshal<std::vector<T>,
   [[nodiscard]] std::pair<i64, std::optional<std::vector<T>>> operator()(
       std::span<const std::byte> data) const {
     auto res = Unmarshal<std::vector<std::vector<std::byte>>>{}(data);
-    if (res.second == std::nullopt) {
+    if (!res.second.has_value()) {
       return {0, {}};
     }
 
