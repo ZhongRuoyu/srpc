@@ -3,6 +3,7 @@
 #include <cstddef>
 #include <functional>
 #include <memory>
+#include <optional>
 #include <tuple>
 #include <utility>
 #include <vector>
@@ -24,13 +25,15 @@ Result<std::unique_ptr<Server>> Server::New(u16 port) {
   return std::move(server);
 }
 
-void Server::Listen(const std::function<std::vector<std::byte>(
+void Server::Listen(const std::function<std::optional<std::vector<std::byte>>(
                         const SocketAddress &, Result<std::vector<std::byte>>)>
                         &handler) const {
   this->server_socket_->Listen([handler](std::unique_ptr<Socket> socket) {
     auto req = socket->Receive();
     auto res = handler(socket->Address(), req);
-    std::ignore = socket->Send(res);
+    if (res.has_value()) {
+      std::ignore = socket->Send(*res);
+    }
   });
 }
 

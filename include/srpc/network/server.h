@@ -4,6 +4,7 @@
 #include <cstddef>
 #include <functional>
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "srpc/network/server_socket.h"
@@ -26,7 +27,7 @@ class Server {
 
   ~Server() = default;
 
-  void Listen(const std::function<std::vector<std::byte>(
+  void Listen(const std::function<std::optional<std::vector<std::byte>>(
                   const SocketAddress &, Result<std::vector<std::byte>>)>
                   &handler) const;
 

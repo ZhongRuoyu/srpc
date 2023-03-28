@@ -1,5 +1,6 @@
 #include <cstdlib>
 #include <iostream>
+#include <optional>
 #include <ostream>
 #include <sstream>
 #include <string>
@@ -37,7 +38,7 @@ int main(int argc, char **argv) {
   auto server = std::move(server_res.Value());
   server->Listen([](const srpc::SocketAddress &from_addr,
                     srpc::Result<std::vector<std::byte>> req_data_res)
-                     -> std::vector<std::byte> {
+                     -> std::optional<std::vector<std::byte>> {
     if (!req_data_res.OK()) {
       std::cerr << req_data_res.Error() << std::endl;
       return srpc::Marshal<std::string>{}(req_data_res.Error());

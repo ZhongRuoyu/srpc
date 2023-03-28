@@ -12,6 +12,7 @@
 #include <cstring>
 #include <functional>
 #include <memory>
+#include <optional>
 #include <string>
 #include <thread>
 #include <utility>
@@ -113,7 +114,7 @@ const SocketAddress &ServerDatagramSocket::Address() const {
 }
 
 void ServerDatagramSocket::Listen(
-    const std::function<std::vector<std::byte>(
+    const std::function<std::optional<std::vector<std::byte>>(
         const SocketAddress &, std::vector<std::byte>)> &handler) const {
   assert(this->descriptor_ != -1);
 
@@ -132,15 +133,17 @@ void ServerDatagramSocket::Listen(
                       data = std::move(msg), descriptor = this->descriptor_,
                       from, from_len]() mutable {
       auto res = handler(from_addr, std::move(data));
-      i64 data_sent = 0;
-      while (data_sent < res.size()) {
-        i64 sendto_res =
-            sendto(descriptor, res.data() + data_sent, res.size() - data_sent,
-                   0, (sockaddr *)&from, from_len);
-        if (sendto_res == -1) {
-          return;
+      if (res.has_value()) {
+        i64 data_sent = 0;
+        while (data_sent < res->size()) {
+          i64 sendto_res =
+              sendto(descriptor, res->data() + data_sent,
+                     res->size() - data_sent, 0, (sockaddr *)&from, from_len);
+          if (sendto_res == -1) {
+            return;
+          }
+          data_sent += sendto_res;
         }
-        data_sent += sendto_res;
       }
     });
     work.detach();

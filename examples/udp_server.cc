@@ -3,6 +3,7 @@
 #include <cstddef>
 #include <cstdlib>
 #include <iostream>
+#include <optional>
 #include <ostream>
 #include <random>
 #include <sstream>
@@ -42,34 +43,34 @@ int main(int argc, char **argv) {
 
   auto server = std::move(server_res.Value());
   std::random_device rand;
-  server->Listen(
-      [&rand](const srpc::SocketAddress &from_addr,
-              const std::vector<std::byte> &req_msg) -> std::vector<std::byte> {
-        auto req_data_res = srpc::RemoveMessageHeader(req_msg);
-        if (!req_data_res.has_value()) {
-          std::cerr << "deserialization failure" << std::endl;
-          return srpc::Marshal<std::string>{}("deserialization failure");
-        }
-        auto maybe_req = srpc::Unmarshal<std::string>{}(*req_data_res);
-        if (!maybe_req.second.has_value()) {
-          std::cerr << "deserialization failure" << std::endl;
-          return srpc::Marshal<std::string>{}("deserialization failure");
-        }
-        auto req = std::move(*maybe_req.second);
-        std::cout << "server received request from " << from_addr << ": " << req
-                  << std::endl;
+  server->Listen([&rand](const srpc::SocketAddress &from_addr,
+                         const std::vector<std::byte> &req_msg)
+                     -> std::optional<std::vector<std::byte>> {
+    auto req_data_res = srpc::RemoveMessageHeader(req_msg);
+    if (!req_data_res.has_value()) {
+      std::cerr << "deserialization failure" << std::endl;
+      return srpc::Marshal<std::string>{}("deserialization failure");
+    }
+    auto maybe_req = srpc::Unmarshal<std::string>{}(*req_data_res);
+    if (!maybe_req.second.has_value()) {
+      std::cerr << "deserialization failure" << std::endl;
+      return srpc::Marshal<std::string>{}("deserialization failure");
+    }
+    auto req = std::move(*maybe_req.second);
+    std::cout << "server received request from " << from_addr << ": " << req
+              << std::endl;
 
-        // Wait for a random period of time (between 0 and 1000 milliseconds)
-        // before sending back the result.
-        std::this_thread::sleep_for(std::chrono::milliseconds(
-            std::uniform_int_distribution<std::chrono::milliseconds::rep>{
-                0, 1000}(rand)));
+    // Wait for a random period of time (between 0 and 1000 milliseconds)
+    // before sending back the result.
+    std::this_thread::sleep_for(std::chrono::milliseconds(
+        std::uniform_int_distribution<std::chrono::milliseconds::rep>{
+            0, 1000}(rand)));
 
-        std::stringstream res;
-        res << "Hi " << from_addr << ", server received your request \"" << req
-            << "\".";
-        return srpc::MakeMessage(srpc::Marshal<std::string>{}(res.str()));
-      });
+    std::stringstream res;
+    res << "Hi " << from_addr << ", server received your request \"" << req
+        << "\".";
+    return srpc::MakeMessage(srpc::Marshal<std::string>{}(res.str()));
+  });
 
   return 0;
 }

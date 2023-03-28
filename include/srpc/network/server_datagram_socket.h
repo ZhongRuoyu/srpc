@@ -4,6 +4,7 @@
 #include <cstddef>
 #include <functional>
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "srpc/network/tcp_ip.h"
@@ -29,7 +30,7 @@ class ServerDatagramSocket {
   [[nodiscard]] const SocketAddress &Address() const;
 
   void Listen(
-      const std::function<std::vector<std::byte>(
+      const std::function<std::optional<std::vector<std::byte>>(
           const SocketAddress &, std::vector<std::byte>)> &handler) const;
 
  private:
