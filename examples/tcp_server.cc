@@ -1,9 +1,12 @@
+#include <chrono>
 #include <cstdlib>
 #include <iostream>
 #include <optional>
 #include <ostream>
+#include <random>
 #include <sstream>
 #include <string>
+#include <thread>
 #include <utility>
 
 #include "srpc/network/server.h"
@@ -36,8 +39,9 @@ int main(int argc, char **argv) {
   }
 
   auto server = std::move(server_res.Value());
-  server->Listen([](const srpc::SocketAddress &from_addr,
-                    srpc::Result<std::vector<std::byte>> req_data_res)
+  std::random_device rand;
+  server->Listen([&rand](const srpc::SocketAddress &from_addr,
+                         srpc::Result<std::vector<std::byte>> req_data_res)
                      -> std::optional<std::vector<std::byte>> {
     if (!req_data_res.OK()) {
       std::cerr << req_data_res.Error() << std::endl;
@@ -51,6 +55,12 @@ int main(int argc, char **argv) {
     auto req = std::move(*maybe_req.second);
     std::cout << "server received request from " << from_addr << ": " << req
               << std::endl;
+
+    // Wait for a random period of time (between 0 and 1000 milliseconds)
+    // before sending back the result.
+    std::this_thread::sleep_for(std::chrono::milliseconds(
+        std::uniform_int_distribution<std::chrono::milliseconds::rep>{
+            0, 500}(rand)));
 
     std::stringstream res;
     res << "Hi " << from_addr << ", server received your request \"" << req
