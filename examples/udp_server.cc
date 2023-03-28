@@ -14,6 +14,7 @@
 #include "srpc/network/datagram_server.h"
 #include "srpc/network/message.h"
 #include "srpc/network/tcp_ip.h"
+#include "srpc/types/floats.h"
 #include "srpc/types/strings.h"
 #include "srpc/utils/result.h"
 
@@ -60,11 +61,16 @@ int main(int argc, char **argv) {
     std::cout << "server received request from " << from_addr << ": " << req
               << std::endl;
 
+    // Simulate response loss.
+    if (std::uniform_real_distribution<srpc::f32>{0.0, 1.0}(rand) > 0.8) {
+      return {};
+    }
+
     // Wait for a random period of time (between 0 and 1000 milliseconds)
     // before sending back the result.
     std::this_thread::sleep_for(std::chrono::milliseconds(
         std::uniform_int_distribution<std::chrono::milliseconds::rep>{
-            0, 1000}(rand)));
+            0, 500}(rand)));
 
     std::stringstream res;
     res << "Hi " << from_addr << ", server received your request \"" << req
