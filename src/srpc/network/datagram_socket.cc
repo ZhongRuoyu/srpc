@@ -111,12 +111,12 @@ Result<i64> DatagramSocket::Send(const std::vector<std::byte> &msg) const {
     return std::string{"Message is too large"};
   }
 
-  constexpr int retry_times = 10;
+  constexpr int retry_times = 8;
   int retry_us = 10'000;  // 10 milliseconds
   for (int i = 0; i <= retry_times; ++i) {
     timeval tv{
-        .tv_sec = 0,
-        .tv_usec = retry_us,
+        .tv_sec = retry_us / 1'000'000,
+        .tv_usec = retry_us % 1'000'000,
     };
     if (setsockopt(this->descriptor_, SOL_SOCKET, SO_SNDTIMEO, &tv,
                    sizeof(tv)) == -1) {
@@ -151,12 +151,12 @@ Result<i64> DatagramSocket::Send(const std::vector<std::byte> &msg) const {
 Result<std::vector<std::byte>> DatagramSocket::Receive() const {
   assert(this->descriptor_ != -1);
 
-  constexpr int retry_times = 10;
+  constexpr int retry_times = 8;
   int retry_us = 10'000;  // 10 milliseconds
   for (int i = 0; i <= retry_times; ++i) {
     timeval tv{
-        .tv_sec = 0,
-        .tv_usec = retry_us,
+        .tv_sec = retry_us / 1'000'000,
+        .tv_usec = retry_us % 1'000'000,
     };
     if (setsockopt(this->descriptor_, SOL_SOCKET, SO_RCVTIMEO, &tv,
                    sizeof(tv)) == -1) {
