@@ -3,7 +3,6 @@
 #include <cstddef>
 #include <functional>
 #include <memory>
-#include <optional>
 #include <tuple>
 #include <utility>
 #include <vector>
@@ -27,7 +26,8 @@ Result<std::unique_ptr<DatagramServer>> DatagramServer::New(u16 port) {
 
 void DatagramServer::Listen(
     const std::function<std::optional<std::vector<std::byte>>(
-        const SocketAddress &, std::vector<std::byte>)> &handler) const {
+        const SocketAddress &, Result<std::vector<std::byte>>)> &handler)
+    const {
   this->server_datagram_socket_->Listen(handler);
 }
 

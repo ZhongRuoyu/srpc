@@ -27,9 +27,9 @@ class DatagramServer {
 
   ~DatagramServer() = default;
 
-  void Listen(
-      const std::function<std::optional<std::vector<std::byte>>(
-          const SocketAddress &, std::vector<std::byte>)> &handler) const;
+  void Listen(const std::function<std::optional<std::vector<std::byte>>(
+                  const SocketAddress &, Result<std::vector<std::byte>>)>
+                  &handler) const;
 
  private:
   explicit DatagramServer(

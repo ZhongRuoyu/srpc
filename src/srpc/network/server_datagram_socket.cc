@@ -115,7 +115,8 @@ const SocketAddress &ServerDatagramSocket::Address() const {
 
 void ServerDatagramSocket::Listen(
     const std::function<std::optional<std::vector<std::byte>>(
-        const SocketAddress &, std::vector<std::byte>)> &handler) const {
+        const SocketAddress &, Result<std::vector<std::byte>>)> &handler)
+    const {
   assert(this->descriptor_ != -1);
 
   for (;;) {

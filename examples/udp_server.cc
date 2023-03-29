@@ -45,8 +45,13 @@ int main(int argc, char **argv) {
   auto server = std::move(server_res.Value());
   std::random_device rand;
   server->Listen([&rand](const srpc::SocketAddress &from_addr,
-                         const std::vector<std::byte> &req_msg)
+                         srpc::Result<std::vector<std::byte>> req_msg_res)
                      -> std::optional<std::vector<std::byte>> {
+    if (!req_msg_res.OK()) {
+      std::cerr << req_msg_res.Error() << std::endl;
+      return srpc::Marshal<std::string>{}(req_msg_res.Error());
+    }
+    auto req_msg = std::move(req_msg_res.Value());
     auto req_data_res = srpc::RemoveMessageHeader(req_msg);
     if (!req_data_res.has_value()) {
       std::cerr << "deserialization failure" << std::endl;
