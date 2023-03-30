@@ -124,7 +124,7 @@ Result<i64> DatagramSocket::Send(const std::vector<std::byte> &msg) const {
   i64 res = send(this->descriptor_, msg.data(), msg.size(), 0);
   if (res == -1) {
     // NOLINTNEXTLINE(concurrency-mt-unsafe)
-    return std::string{std::strerror(errno)};
+    return std::string{"Send timed out"};
   }
 
   return res;
@@ -147,7 +147,7 @@ Result<std::vector<std::byte>> DatagramSocket::Receive() const {
   i64 res = recv(this->descriptor_, msg.data(), msg.size(), 0);
   if (res == -1) {
     // NOLINTNEXTLINE(concurrency-mt-unsafe)
-    return std::string{std::strerror(errno)};
+    return std::string{"Receive timed out"};
   }
 
   msg.resize(res);
