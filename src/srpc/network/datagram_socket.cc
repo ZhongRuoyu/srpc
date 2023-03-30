@@ -111,84 +111,48 @@ Result<i64> DatagramSocket::Send(const std::vector<std::byte> &msg) const {
     return std::string{"Message is too large"};
   }
 
-  constexpr int retry_times = 8;
-  int retry_us = 10'000;  // 10 milliseconds
-  for (int i = 0; i <= retry_times; ++i) {
-    timeval tv{
-        .tv_sec = retry_us / 1'000'000,
-        .tv_usec = retry_us % 1'000'000,
-    };
-    if (setsockopt(this->descriptor_, SOL_SOCKET, SO_SNDTIMEO, &tv,
-                   sizeof(tv)) == -1) {
-      // NOLINTNEXTLINE(concurrency-mt-unsafe)
-      return std::string{std::strerror(errno)};
-    }
-
-    i64 res = send(this->descriptor_, msg.data(), msg.size(), 0);
-    if (res == -1) {
-      if (errno == EAGAIN || errno == EWOULDBLOCK) {
-        // send has timed out. See socket(7).
-        retry_us *= 2;
-        continue;
-      }
-      // NOLINTNEXTLINE(concurrency-mt-unsafe)
-      return std::string{std::strerror(errno)};
-    }
-
-    if (i == 0) {
-      return res;
-    }
-    return {
-        res,
-        std::string{"Send succeeded after " + std::to_string(i) + " retries"},
-    };
+  timeval tv{
+      .tv_sec = 15,
+      .tv_usec = 0,
+  };
+  if (setsockopt(this->descriptor_, SOL_SOCKET, SO_SNDTIMEO, &tv, sizeof(tv)) ==
+      -1) {
+    // NOLINTNEXTLINE(concurrency-mt-unsafe)
+    return std::string{std::strerror(errno)};
   }
 
-  return std::string{"Send failed after " + std::to_string(retry_times) +
-                     " retries"};
+  i64 res = send(this->descriptor_, msg.data(), msg.size(), 0);
+  if (res == -1) {
+    // NOLINTNEXTLINE(concurrency-mt-unsafe)
+    return std::string{std::strerror(errno)};
+  }
+
+  return res;
 }
 
 Result<std::vector<std::byte>> DatagramSocket::Receive() const {
   assert(this->descriptor_ != -1);
 
-  constexpr int retry_times = 8;
-  int retry_us = 10'000;  // 10 milliseconds
-  for (int i = 0; i <= retry_times; ++i) {
-    timeval tv{
-        .tv_sec = retry_us / 1'000'000,
-        .tv_usec = retry_us % 1'000'000,
-    };
-    if (setsockopt(this->descriptor_, SOL_SOCKET, SO_RCVTIMEO, &tv,
-                   sizeof(tv)) == -1) {
-      // NOLINTNEXTLINE(concurrency-mt-unsafe)
-      return std::string{std::strerror(errno)};
-    }
-
-    std::vector<std::byte> msg(65536);
-    i64 res = recv(this->descriptor_, msg.data(), msg.size(), 0);
-    if (res == -1) {
-      if (errno == EAGAIN || errno == EWOULDBLOCK) {
-        // recv has timed out. See socket(7).
-        retry_us *= 2;
-        continue;
-      }
-      // NOLINTNEXTLINE(concurrency-mt-unsafe)
-      return std::string{std::strerror(errno)};
-    }
-
-    msg.resize(res);
-    if (i == 0) {
-      return std::move(msg);
-    }
-    return {
-        std::move(msg),
-        std::string{"Receive succeeded after " + std::to_string(i) +
-                    " retries"},
-    };
+  timeval tv{
+      .tv_sec = 15,
+      .tv_usec = 0,
+  };
+  if (setsockopt(this->descriptor_, SOL_SOCKET, SO_RCVTIMEO, &tv, sizeof(tv)) ==
+      -1) {
+    // NOLINTNEXTLINE(concurrency-mt-unsafe)
+    return std::string{std::strerror(errno)};
   }
 
-  return std::string{"Receive failed after " + std::to_string(retry_times) +
-                     " retries"};
+  std::vector<std::byte> msg(65536);
+  i64 res = recv(this->descriptor_, msg.data(), msg.size(), 0);
+  if (res == -1) {
+    // NOLINTNEXTLINE(concurrency-mt-unsafe)
+    return std::string{std::strerror(errno)};
+  }
+
+  msg.resize(res);
+  // NOLINTNEXTLINE(concurrency-mt-unsafe)
+  return msg;
 }
 
 DatagramSocket::DatagramSocket(SocketAddress address, int descriptor)
